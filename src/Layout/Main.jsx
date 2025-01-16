@@ -7,7 +7,10 @@ const Main = () => {
   return (
     <div>
         <Navbar></Navbar>
-      <Outlet></Outlet>
+        <div className="container mx-auto px-4 md:px-8 lg:px-16 pt-20 min-h-[calc(100vh-313px)]">
+        <Outlet></Outlet>
+        </div>
+      
       <Footer></Footer>
     </div>
   )
