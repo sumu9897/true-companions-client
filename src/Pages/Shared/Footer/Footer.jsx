@@ -1,11 +1,11 @@
 import React from 'react'
 
-const SignUp = () => {
+const Footer = () => {
   return (
     <div>
-      SignUp page
+      Footer
     </div>
   )
 }
 
-export default SignUp
+export default Footer
