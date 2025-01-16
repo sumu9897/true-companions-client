@@ -26,7 +26,7 @@ const Login = () => {
         <div className=" md:w-1/2 lg:flex-left">
           <img className="size-96 mx-auto" src={login} alt="" />
         </div>
-        <div className="md:w-1/2 max-w-sm bg-pink-100 p-4">
+        <div className="md:w-1/2 max-w-sm mx-auto bg-pink-100 p-4">
           <form onSubmit={handleLogin} className="p-6 bg-white shadow-md rounded-md">
             <h2 className="text-2xl p-6 text-center">LOGIN</h2>
             <div className="mb-4">
