@@ -54,7 +54,7 @@ const Navbar = () => {
             user ? <>
             <li>
             <Link
-              to="/dashboard/view-biodata"
+              to="/dashboard/"
               className="text-gray-700 hover:text-indigo-500 font-medium transition"
             >
               Dashboard

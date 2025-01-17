@@ -9,6 +9,14 @@ import "../index.css"
 import Dashboard from "../Layout/Dashboard";
 import ViewBioData from "../Pages/Dashboard/ViewBioData/ViewBioData";
 import PrivateRoute from "./PrivateRoute";
+import EditBioData from "../Pages/Dashboard/EditBioData/EditBioData";
+import UserContactRequest from "../Pages/Dashboard/UserContactRequest/UserContactRequest";
+import UserFavourites from "../Pages/Dashboard/UserFavourites/UserFavourites";
+import GotMarriedForm from "../Pages/Dashboard/GotMarriedForm/GotMarriedForm";
+import AdminDashboard from "../Pages/Dashboard/AdminDashboard/AdminDashboard/AdminDashboard";
+import ManageUsers from "../Pages/Dashboard/AdminDashboard/ManageUsers/ManageUsers";
+import ApproedPremium from "../Pages/Dashboard/AdminDashboard/ApproedPremium/ApproedPremium";
+import ContactRequest from "../Pages/Dashboard/AdminDashboard/ContactRequest/ContactRequest";
 
 export const router = createBrowserRouter([
   {
@@ -44,7 +52,40 @@ export const router = createBrowserRouter([
         {
             path: 'view-biodata',
             element: <ViewBioData></ViewBioData>
-        }
+        },
+        {
+            path:'edit-biodata',
+            element: <EditBioData></EditBioData>,
+        },
+        {
+            path:'my-contact-request',
+            element: <UserContactRequest></UserContactRequest>,
+        },
+        {
+            path: 'my-favourites',
+            element: <UserFavourites></UserFavourites>
+        },
+        {
+            path: 'got-married',
+            element:<GotMarriedForm></GotMarriedForm>
+        },
+        {
+            path: 'admin',
+            element:<AdminDashboard></AdminDashboard>
+        },
+        {
+            path: 'manage',
+            element: <ManageUsers></ManageUsers>
+        },
+        {
+            path: 'approvedPremium',
+            element:<ApproedPremium></ApproedPremium>
+        },
+        {
+            path: 'approvedContactRequest',
+            element: <ContactRequest></ContactRequest>
+        },
+
     ]
   }
 ]);

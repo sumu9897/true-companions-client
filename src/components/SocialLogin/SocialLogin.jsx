@@ -26,10 +26,11 @@ const SocialLogin = () => {
   }
   return (
     <div className="mx-auto pb-8">
+      <h2 className="text-center py-4">-----------------------OR-----------------------</h2>
       <div>
-        <button onClick={handleGoogleSignIn} className="btn">
+        <button onClick={handleGoogleSignIn} className="btn flex items-center gap-2 text-center mx-auto">
           <FaGoogle className=""></FaGoogle>
-          Google
+          <span className="">Connect with Google</span>
         </button>
       </div>
     </div>
