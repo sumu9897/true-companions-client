@@ -6,6 +6,9 @@ import ContactUs from "../Pages/Contact/ContactUs";
 import Login from "../Pages/Login/Login";
 import SignUp from "../Pages/SignUp/SignUp";
 import "../index.css"
+import Dashboard from "../Layout/Dashboard";
+import ViewBioData from "../Pages/Dashboard/ViewBioData/ViewBioData";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -34,4 +37,14 @@ export const router = createBrowserRouter([
         }
     ]
   },
+  {
+    path: "dashboard",
+    element:<PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
+    children: [
+        {
+            path: 'view-biodata',
+            element: <ViewBioData></ViewBioData>
+        }
+    ]
+  }
 ]);

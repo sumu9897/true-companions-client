@@ -2,21 +2,45 @@ import { useContext } from "react";
 import login from "../../assets/login/login.png";
 import { Helmet } from "react-helmet-async";
 import { AuthContext } from "../../providers/AuthProvider";
-import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import SocialLogin from "../../components/SocialLogin/SocialLogin";
 const Login = () => {
-    const {signIn} = useContext(AuthContext);
-    const handleLogin = e =>{
-        e.preventDefault();
-        const form = e.target;
-        const email = form.email.value;
-        const password = form.password.value;
-        console.log(email,password)
-        signIn(email,password)
-        .then(result => {
-            const user = result.user;
-            console.log(user);
-        })
-    }
+  const { signIn } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.form?.pathname || "/";
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const email = form.email.value;
+    const password = form.password.value;
+    console.log(email, password);
+    signIn(email, password).then((result) => {
+      const user = result.user;
+      console.log(user);
+      Swal.fire({
+        title: "User Login Successful.",
+        showClass: {
+          popup: `
+                    animate__animated
+                    animate__fadeInUp
+                    animate__faster
+                  `,
+        },
+        hideClass: {
+          popup: `
+                    animate__animated
+                    animate__fadeOutDown
+                    animate__faster
+                  `,
+        },
+      });
+      navigate(from, { replace: true });
+    });
+  };
   return (
     <>
       <Helmet>
@@ -27,10 +51,15 @@ const Login = () => {
           <img className="size-96 mx-auto" src={login} alt="" />
         </div>
         <div className="md:w-1/2 max-w-sm mx-auto bg-pink-100 p-4">
-          <form onSubmit={handleLogin} className="p-6 bg-white shadow-md rounded-md">
+          <form
+            onSubmit={handleLogin}
+            className="p-6 bg-white shadow-md rounded-md"
+          >
             <h2 className="text-2xl p-6 text-center">LOGIN</h2>
             <div className="mb-4">
-              <label className="block text-gray-700 font-medium mb-2">Email</label>
+              <label className="block text-gray-700 font-medium mb-2">
+                Email
+              </label>
               <input
                 type="email"
                 name="email"
@@ -62,8 +91,12 @@ const Login = () => {
                 value="Login"
               />
             </div>
-          </form>
-          <h5>New Here? <Link to={'/signup'}>Create an Account!</Link></h5>
+          </form> 
+
+          <h5>
+            New Here? <Link to={"/signup"}>Create an Account!</Link>
+          </h5>
+          <SocialLogin></SocialLogin>
         </div>
       </div>
     </>
