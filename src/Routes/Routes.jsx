@@ -69,6 +69,7 @@ export const router = createBrowserRouter([
             path: 'got-married',
             element:<GotMarriedForm></GotMarriedForm>
         },
+        // Admin Routes
         {
             path: 'admin',
             element:<AdminDashboard></AdminDashboard>

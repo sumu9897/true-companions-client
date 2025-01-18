@@ -60,7 +60,7 @@ const Navbar = () => {
               Dashboard
             </Link>
           </li>
-          <span>{user?.displayName}</span>
+          {/* <span>{user?.displayName}</span> */}
             <button onClick={handleLogOut} > LogOut</button>
             </>:<>
             <li>

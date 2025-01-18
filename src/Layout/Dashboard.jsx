@@ -41,7 +41,7 @@ const Dashboard = () => {
                 className="flex gap-2 items-center"
                 to={"/dashboard/approvedContactRequest"}
               >
-                <FaEdit /> Approed Contact Request
+                <FaEdit /> Approved Contact Request
               </NavLink>
             </li>
             </>:<>
