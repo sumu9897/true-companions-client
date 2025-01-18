@@ -81,7 +81,7 @@ const CreateBioData = () => {
       const bioData = {
         name: data.name,
         age: data.age,
-        biodataType: data.bidataType,
+        biodataType: data.biodataType,
         dob: data.dob,
         height: data.height,
         weight: data.weight,
@@ -137,8 +137,8 @@ const CreateBioData = () => {
             <option disabled selected>
               Select an option
             </option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
           </select>
         </div>
 
