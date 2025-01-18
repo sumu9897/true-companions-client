@@ -1,9 +1,10 @@
 import { NavLink, Outlet } from "react-router-dom";
 import Navbar from "../Pages/Shared/Navbar/Navbar";
 import { FaEdit, FaEye, FaEnvelope, FaHeart, FaCheckCircle } from 'react-icons/fa';
+import useAdmin from "../hooks/useAdmin";
 
 const Dashboard = () => {
-    const isAdmin = true;
+    const [isAdmin] = useAdmin();
   return (
     <div>
       <Navbar></Navbar>

@@ -9,7 +9,11 @@ const ManageUsers = () => {
   const { data: users = [], refetch } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const res = await axiosSecure.get("/users");
+      const res = await axiosSecure.get("/users",{
+        headers: {
+            authorization: `Bearer ${localStorage.getItem('access-token')}`
+        }
+      });
       return res.data;
     },
   });
@@ -30,29 +34,28 @@ const ManageUsers = () => {
   };
   const handleDeleteUser = (user) => {
     Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          axiosSecure.delete(`/users/${user._id}`).then((res) => {
-            if (res.data.deletedCount > 0) {
-              refetch();
-              Swal.fire({
-                title: "Deleted!",
-                text: "Your file has been deleted.",
-                icon: "success",
-              });
-            }
-          });
-        }
-      });
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosSecure.delete(`/users/${user._id}`).then((res) => {
+          if (res.data.deletedCount > 0) {
+            refetch();
+            Swal.fire({
+              title: "Deleted!",
+              text: "Your file has been deleted.",
+              icon: "success",
+            });
+          }
+        });
+      }
+    });
   };
-
 
   return (
     <div>
@@ -64,7 +67,7 @@ const ManageUsers = () => {
         <table className="w-full">
           <thead>
             <tr>
-              <th>#</th>
+              <th className="pl-4">#</th>
               <th>Name</th>
               <th>Email</th>
               <th>Role</th>
@@ -75,29 +78,32 @@ const ManageUsers = () => {
           <tbody>
             {users.map((user, index) => (
               <tr key={user._id}>
-                <th>{index + 1}</th>
-                <td>{user.name}</td>
+                <th className="pl-4">{index + 1}</th>
+                <td className="pl-8">{user.name}</td>
                 <td>{user.email}</td>
-                <td>{user.role === "admin" ? (
+                <td className="text-center">
+                  {user.role === "admin" ? (
                     "Admin"
                   ) : (
                     <button
                       onClick={() => handleMakeAdmin(user)}
                       className="btn bg-primary btn-lg"
+                      disabled={user.role === "admin"} // Disable button if user is admin
                     >
-                      <FaUsers className="text-white text-2xl"></FaUsers>
+                      <FaUsers className="text-white rounded-lg text-4xl p-2"></FaUsers>
                     </button>
-                  )}</td>
-                  <td></td>
-                <td>
+                  )}
+                </td>
+                <td></td>
+                <td className="text-center">
                   <button
                     onClick={() => handleDeleteUser(user)}
                     className="btn btn-ghost btn-lg"
+                    disabled={user.role === "admin"} // Disable button if user is admin
                   >
                     <FaTrashAlt className="text-red-600"></FaTrashAlt>
                   </button>
                 </td>
-                
               </tr>
             ))}
           </tbody>
