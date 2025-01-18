@@ -19,17 +19,17 @@ const Dashboard = () => {
   const [biodataId, setBiodataId] = useState(null);
 
   return (
-    <div>
-      <Navbar></Navbar>
-      <div className="flex mt-16 pt-4 ">
+    <div className="font-sans">
+      <Navbar />
+      <div className="flex mt-16 pt-4">
         {/* Sidebar */}
-        <div className="w-64 min-h-screen bg-primary pt-5 pl-6">
+        <div className="w-64 min-h-screen bg-primary text-white py-5 px-6">
           <ul>
             {isAdmin ? (
               <>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center"
+                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
                     to={"/dashboard/admin"}
                   >
                     <FaUserShield /> Admin Dashboard
@@ -37,7 +37,7 @@ const Dashboard = () => {
                 </li>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center"
+                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
                     to={"/dashboard/manage"}
                   >
                     <FaUsers /> Manage User
@@ -45,7 +45,7 @@ const Dashboard = () => {
                 </li>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center"
+                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
                     to={"/dashboard/approvedPremium"}
                   >
                     <FaClipboardCheck /> Approved Premium
@@ -53,7 +53,7 @@ const Dashboard = () => {
                 </li>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center"
+                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
                     to={"/dashboard/approvedContactRequest"}
                   >
                     <FaClipboardList /> Approved Contact Request
@@ -64,7 +64,7 @@ const Dashboard = () => {
               <>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center"
+                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
                     to={"/dashboard/create-biodata"}
                   >
                     <FaEdit /> Create Biodata
@@ -72,7 +72,7 @@ const Dashboard = () => {
                 </li>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center"
+                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
                     to={"/dashboard/edit-biodata"}
                   >
                     <FaEdit /> Edit Biodata
@@ -80,7 +80,7 @@ const Dashboard = () => {
                 </li>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center"
+                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
                     to={`/biodata/${biodataId || "loading"}`}
                   >
                     <FaEye /> {biodataId ? "View Biodata" : "Loading..."}
@@ -88,7 +88,7 @@ const Dashboard = () => {
                 </li>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center"
+                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
                     to={"/dashboard/contact-request"}
                   >
                     <FaEnvelope /> My Contact Request
@@ -96,7 +96,7 @@ const Dashboard = () => {
                 </li>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center"
+                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
                     to={"/dashboard/favourites"}
                   >
                     <FaHeart /> My Favourites Biodata
@@ -104,7 +104,7 @@ const Dashboard = () => {
                 </li>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center"
+                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
                     to={"/dashboard/got-married"}
                   >
                     <FaCheckCircle /> Got Married Form
@@ -114,9 +114,10 @@ const Dashboard = () => {
             )}
           </ul>
         </div>
+
         {/* Main Content */}
-        <div className="flex-1">
-          <Outlet></Outlet>
+        <div className="flex-1 bg-gray-50 p-6">
+          <Outlet />
         </div>
       </div>
     </div>
