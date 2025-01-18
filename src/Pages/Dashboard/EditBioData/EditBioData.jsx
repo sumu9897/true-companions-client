@@ -97,7 +97,7 @@ const EditBioData = () => {
         profileImage: imageUrl,
       };
       try {
-        const response = await axiosSecure.post('/biodata', bioData); // Replace '/api/biodata' with your API endpoint
+        const response = await axiosSecure.post('/biodata', bioData); 
         if (response.status === 200) {
             console.log("Bio data saved successfully:", response.data);
             Swal.fire({

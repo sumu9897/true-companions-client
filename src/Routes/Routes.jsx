@@ -50,7 +50,7 @@ export const router = createBrowserRouter([
     element:<PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
     children: [
         {
-            path: 'view-biodata',
+            path: 'biodata/:id',
             element: <ViewBioData></ViewBioData>
         },
         {
