@@ -13,26 +13,27 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Fetch biodata stats from the backend when the component mounts
   useEffect(() => {
     fetchBiodataStats();
   }, []);
 
   const fetchBiodataStats = async () => {
     setLoading(true);
-    setError("");
+    setError(""); // Reset any existing errors
     try {
-      const res = await fetch("/api/biodata/stats", {
+      const response = await fetch("/api/biodata/stats", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      if (!res.ok) {
+      if (!response.ok) {
         throw new Error("Failed to fetch biodata stats");
       }
 
-      const data = await res.json();
-      setBiodataStats(data);
+      const data = await response.json();
+      setBiodataStats(data); // Update state with fetched data
     } catch (error) {
       console.error("Error fetching biodata stats:", error);
       setError("Failed to load statistics. Please try again.");
@@ -45,12 +46,14 @@ const AdminDashboard = () => {
     <div className="admin-dashboard-container">
       <h1 className="dashboard-title">Admin Dashboard</h1>
 
+      {/* Loading or error state */}
       {loading ? (
         <p className="loading-text">Loading data...</p>
       ) : error ? (
         <p className="error-text">{error}</p>
       ) : (
         <div className="stats-container">
+          {/* Biodata Statistics Section */}
           <div className="stats-card">
             <h2>Biodata Statistics</h2>
             <ul className="stats-list">
@@ -69,6 +72,7 @@ const AdminDashboard = () => {
             </ul>
           </div>
 
+          {/* Revenue Section */}
           <div className="stats-card">
             <h2>Revenue</h2>
             <p>

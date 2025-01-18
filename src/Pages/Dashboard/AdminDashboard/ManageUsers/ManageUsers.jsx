@@ -9,29 +9,30 @@ const ManageUsers = () => {
   const { data: users = [], refetch } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const res = await axiosSecure.get("/users",{
+      const res = await axiosSecure.get("/users", {
         headers: {
-            authorization: `Bearer ${localStorage.getItem('access-token')}`
-        }
+          authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
       });
       return res.data;
     },
   });
+
   const handleMakeAdmin = (user) => {
     axiosSecure.patch(`/users/admin/${user._id}`).then((res) => {
-      console.log(res.data);
       if (res.data.modifiedCount > 0) {
         refetch();
         Swal.fire({
           position: "top-center",
           icon: "success",
-          title: `${user.name} is an Admin Now!`,
+          title: `${user.name} is now an Admin!`,
           showConfirmButton: false,
           timer: 1500,
         });
       }
     });
   };
+
   const handleDeleteUser = (user) => {
     Swal.fire({
       title: "Are you sure?",
@@ -48,7 +49,7 @@ const ManageUsers = () => {
             refetch();
             Swal.fire({
               title: "Deleted!",
-              text: "Your file has been deleted.",
+              text: "User has been deleted.",
               icon: "success",
             });
           }
@@ -58,50 +59,48 @@ const ManageUsers = () => {
   };
 
   return (
-    <div>
-      Manage User
-      <div>
-        <h2 className="text-3xl">Total Users: {users.length}</h2>
+    <div className="p-6 bg-white rounded-lg shadow-lg">
+      <div className="mb-6">
+        <h2 className="text-3xl font-semibold text-gray-800">Total Users: {users.length}</h2>
       </div>
-      <div>
-        <table className="w-full">
-          <thead>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-gray-50 rounded-lg border border-gray-200">
+          <thead className="bg-gray-200">
             <tr>
-              <th className="pl-4">#</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Member Type</th>
-              <th>Action</th>
+              <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">#</th>
+              <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Name</th>
+              <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Email</th>
+              <th className="py-3 px-4 text-center text-sm font-medium text-gray-600">Role</th>
+              <th className="py-3 px-4 text-center text-sm font-medium text-gray-600">Action</th>
             </tr>
           </thead>
           <tbody>
             {users.map((user, index) => (
-              <tr key={user._id}>
-                <th className="pl-4">{index + 1}</th>
-                <td className="pl-8">{user.name}</td>
-                <td>{user.email}</td>
-                <td className="text-center">
+              <tr key={user._id} className="hover:bg-gray-100">
+                <td className="py-3 px-4 text-sm text-gray-700">{index + 1}</td>
+                <td className="py-3 px-4 text-sm text-gray-700">{user.name}</td>
+                <td className="py-3 px-4 text-sm text-gray-700">{user.email}</td>
+                <td className="py-3 px-4 text-center">
                   {user.role === "admin" ? (
-                    "Admin"
+                    <span className="px-3 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
+                      Admin
+                    </span>
                   ) : (
                     <button
                       onClick={() => handleMakeAdmin(user)}
-                      className="btn bg-primary btn-lg"
-                      disabled={user.role === "admin"} // Disable button if user is admin
+                      className="bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition"
                     >
-                      <FaUsers className="text-white rounded-lg text-4xl p-2"></FaUsers>
+                      <FaUsers className="text-white text-lg" />
                     </button>
                   )}
                 </td>
-                <td></td>
-                <td className="text-center">
+                <td className="py-3 px-4 text-center">
                   <button
                     onClick={() => handleDeleteUser(user)}
-                    className="btn btn-ghost btn-lg"
-                    disabled={user.role === "admin"} // Disable button if user is admin
+                    className="text-red-600 hover:text-red-800 transition"
+                    disabled={user.role === "admin"}
                   >
-                    <FaTrashAlt className="text-red-600"></FaTrashAlt>
+                    <FaTrashAlt className="text-xl" />
                   </button>
                 </td>
               </tr>
