@@ -6,19 +6,25 @@ import {
   FaEnvelope,
   FaHeart,
   FaCheckCircle,
-} from "react-icons/fa";
+  FaUsers,
+  FaClipboardCheck,
+  FaUserShield,
+  FaClipboardList,
+} from "react-icons/fa"; // Added relevant icons
 import useAdmin from "../hooks/useAdmin";
 import { useState } from "react";
 
 const Dashboard = () => {
   const [isAdmin] = useAdmin();
   const [biodataId, setBiodataId] = useState(null);
+
   return (
     <div>
       <Navbar></Navbar>
       <div className="flex mt-16 pt-4 ">
+        {/* Sidebar */}
         <div className="w-64 min-h-screen bg-primary pt-5 pl-6">
-          <ul className="">
+          <ul>
             {isAdmin ? (
               <>
                 <li>
@@ -26,7 +32,7 @@ const Dashboard = () => {
                     className="flex gap-2 items-center"
                     to={"/dashboard/admin"}
                   >
-                    <FaEdit /> Admin Dashboard
+                    <FaUserShield /> Admin Dashboard
                   </NavLink>
                 </li>
                 <li>
@@ -34,7 +40,7 @@ const Dashboard = () => {
                     className="flex gap-2 items-center"
                     to={"/dashboard/manage"}
                   >
-                    <FaEdit /> Manage User
+                    <FaUsers /> Manage User
                   </NavLink>
                 </li>
                 <li>
@@ -42,7 +48,7 @@ const Dashboard = () => {
                     className="flex gap-2 items-center"
                     to={"/dashboard/approvedPremium"}
                   >
-                    <FaEdit /> Approved Premium
+                    <FaClipboardCheck /> Approved Premium
                   </NavLink>
                 </li>
                 <li>
@@ -50,12 +56,20 @@ const Dashboard = () => {
                     className="flex gap-2 items-center"
                     to={"/dashboard/approvedContactRequest"}
                   >
-                    <FaEdit /> Approved Contact Request
+                    <FaClipboardList /> Approved Contact Request
                   </NavLink>
                 </li>
               </>
             ) : (
               <>
+                <li>
+                  <NavLink
+                    className="flex gap-2 items-center"
+                    to={"/dashboard/create-biodata"}
+                  >
+                    <FaEdit /> Create Biodata
+                  </NavLink>
+                </li>
                 <li>
                   <NavLink
                     className="flex gap-2 items-center"
@@ -65,7 +79,7 @@ const Dashboard = () => {
                   </NavLink>
                 </li>
                 <li>
-                <NavLink
+                  <NavLink
                     className="flex gap-2 items-center"
                     to={`/biodata/${biodataId || "loading"}`}
                   >
@@ -100,6 +114,7 @@ const Dashboard = () => {
             )}
           </ul>
         </div>
+        {/* Main Content */}
         <div className="flex-1">
           <Outlet></Outlet>
         </div>

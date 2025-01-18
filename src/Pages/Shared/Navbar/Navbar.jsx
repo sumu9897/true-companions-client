@@ -28,7 +28,7 @@ const Navbar = () => {
           </li>
           <li>
             <Link
-              to="/biodatas"
+              to="/biodatapage"
               className="text-gray-700 hover:text-indigo-500 font-medium transition"
             >
               Biodatas

@@ -1,5 +1,5 @@
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
 import useAxiosPublic from "../../../hooks/useAxiosPublic";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
@@ -7,8 +7,8 @@ import Swal from "sweetalert2";
 const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
 
-const EditBioData = ({ biodataId }) => {
-  const { register, handleSubmit, setValue, watch } = useForm();
+const CreateBioData = () => {
+  const { register, handleSubmit, watch, setValue } = useForm();
   const axiosPublic = useAxiosPublic();
   const axiosSecure = useAxiosSecure();
 
@@ -59,25 +59,6 @@ const EditBioData = ({ biodataId }) => {
 
   const dob = watch("dob");
 
-  // Fetch existing data
-  useEffect(() => {
-    const fetchBioData = async () => {
-      try {
-        const { data } = await axiosSecure.get(`/biodata/${biodataId}`);
-        if (data) {
-          // Populate form fields with existing data
-          Object.keys(data).forEach((key) => setValue(key, data[key]));
-        }
-      } catch (error) {
-        console.error("Error fetching biodata:", error);
-      }
-    };
-
-    if (biodataId) {
-      fetchBioData();
-    }
-  }, [biodataId, axiosSecure, setValue]);
-
   // Calculate age based on dob
   useEffect(() => {
     if (dob) {
@@ -98,42 +79,59 @@ const EditBioData = ({ biodataId }) => {
     if (res.data.success) {
       const imageUrl = res.data.data.display_url;
       const bioData = {
-        ...data,
+        name: data.name,
+        age: data.age,
+        biodataType: data.bidataType,
+        dob: data.dob,
+        height: data.height,
+        weight: data.weight,
+        occupation: data.occupation,
+        race: data.race,
+        fatherName: data.fatherName,
+        motherName: data.motherName,
+        permanentDivision: data.permanentDivision,
+        presentDivision: data.presentDivision,
+        expectedPartnerAge: data.expectedPartnerAge,
+        expectedPartnerHeight: data.expectedPartnerHeight,
+        expectedPartnerWeight: data.expectedPartnerWeight,
+        mobileNumber: data.mobileNumber,
         profileImage: imageUrl,
       };
       try {
-        const response = await axiosSecure.put(
-          `/biodata/${biodataId}`,
-          bioData
-        );
+        const response = await axiosSecure.post("/biodata", bioData);
         if (response.status === 200) {
+          console.log("Bio data saved successfully:", response.data);
           Swal.fire({
             icon: "success",
             title: "Success!",
-            text: "Bio data updated successfully!",
+            text: "Bio data saved successfully!",
           });
         }
       } catch (error) {
+        console.error("Error saving bio data:", error);
         Swal.fire({
           icon: "error",
           title: "Error!",
-          text: "Failed to update bio data. Please try again.",
+          text: "Failed to save bio data. Please try again.",
         });
       }
     }
+
+    // console.log(res.data);
   };
 
   return (
     <div className="max-w-4xl mx-auto bg-white p-8 shadow-md rounded-md">
-      <h1 className="text-2xl font-bold text-gray-700 mb-6">Edit Biodata</h1>
+      <h1 className="text-2xl font-bold text-gray-700 mb-6">Create Biodata</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Biodata Type */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Biodata Type
           </label>
           <select
-            {...register("bidataType")}
+            {...register("biodataType", { required: true })}
             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option disabled selected>
@@ -144,12 +142,12 @@ const EditBioData = ({ biodataId }) => {
           </select>
         </div>
 
+        {/* Full Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Full Name
           </label>
           <input
-          defaultValue={name}
             type="text"
             placeholder="Enter Full Name"
             {...register("name", { required: true })}
@@ -157,6 +155,7 @@ const EditBioData = ({ biodataId }) => {
           />
         </div>
 
+        {/* Profile Image */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Profile Image
@@ -168,13 +167,14 @@ const EditBioData = ({ biodataId }) => {
           />
         </div>
 
+        {/* Date of Birth */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Date of Birth
           </label>
           <input
             type="date"
-            {...register("dob")}
+            {...register("dob", { required: true })}
             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
@@ -396,4 +396,4 @@ const EditBioData = ({ biodataId }) => {
   );
 };
 
-export default EditBioData;
+export default CreateBioData;

@@ -3,7 +3,7 @@ import React from 'react'
 const ContactRequest = () => {
   return (
     <div>
-      Contact Request
+      Contact Request from user side 
     </div>
   )
 }

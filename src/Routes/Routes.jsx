@@ -17,6 +17,9 @@ import AdminDashboard from "../Pages/Dashboard/AdminDashboard/AdminDashboard/Adm
 import ManageUsers from "../Pages/Dashboard/AdminDashboard/ManageUsers/ManageUsers";
 import ApproedPremium from "../Pages/Dashboard/AdminDashboard/ApproedPremium/ApproedPremium";
 import ContactRequest from "../Pages/Dashboard/AdminDashboard/ContactRequest/ContactRequest";
+import BiodatasPage from "../Pages/BiodatasPage/BiodatasPage";
+import CreateBioData from "../Pages/Dashboard/CreateBioData/CreateBioData";
+import AdminRoute from "./AdminRoute";
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +29,10 @@ export const router = createBrowserRouter([
         {
             path: '/',
             element: <Home></Home>
+        },
+        {
+            path: '/biodatapage',
+            element: <BiodatasPage></BiodatasPage>
         },
         {
             path: '/about',
@@ -54,6 +61,10 @@ export const router = createBrowserRouter([
             element: <ViewBioData></ViewBioData>
         },
         {
+            path:'create-biodata',
+            element: <CreateBioData></CreateBioData>
+        },
+        {
             path:'edit-biodata',
             element: <EditBioData></EditBioData>,
         },
@@ -72,7 +83,7 @@ export const router = createBrowserRouter([
         // Admin Routes
         {
             path: 'admin',
-            element:<AdminDashboard></AdminDashboard>
+            element:<AdminRoute><AdminDashboard></AdminDashboard></AdminRoute>
         },
         {
             path: 'manage',
