@@ -20,6 +20,8 @@ import ContactRequest from "../Pages/Dashboard/AdminDashboard/ContactRequest/Con
 import BiodatasPage from "../Pages/BiodatasPage/BiodatasPage";
 import CreateBioData from "../Pages/Dashboard/CreateBioData/CreateBioData";
 import AdminRoute from "./AdminRoute";
+import BiodataDetails from "../Pages/BiodataDetails/BiodataDetails";
+import CheckOut from "../Pages/CheckOut/CheckOut";
 
 export const router = createBrowserRouter([
   {
@@ -49,6 +51,14 @@ export const router = createBrowserRouter([
         {
             path:'signup',
             element: <SignUp></SignUp>
+        },
+        {
+            path: '/biodata/:id',
+            element: <BiodataDetails></BiodataDetails>
+        },
+        {
+            path: '/checkout/:id',
+            element: <CheckOut></CheckOut>
         }
     ]
   },
@@ -60,6 +70,7 @@ export const router = createBrowserRouter([
             path: 'biodata/:id',
             element: <ViewBioData></ViewBioData>
         },
+        
         {
             path:'create-biodata',
             element: <CreateBioData></CreateBioData>
