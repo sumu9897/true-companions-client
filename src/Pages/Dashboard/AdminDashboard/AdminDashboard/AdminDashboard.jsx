@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { FaUsers, FaMoneyBillAlt, FaMale, FaFemale, FaStar } from "react-icons/fa"; // For icons
 import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
@@ -43,41 +44,51 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="admin-dashboard-container">
-      <h1 className="dashboard-title">Admin Dashboard</h1>
+    <div className="admin-dashboard-container p-6">
+      <h1 className="dashboard-title text-3xl font-semibold text-center mb-6">
+        Admin Dashboard
+      </h1>
 
       {/* Loading or error state */}
       {loading ? (
-        <p className="loading-text">Loading data...</p>
+        <div className="loading-state text-center text-lg">Loading data...</div>
       ) : error ? (
-        <p className="error-text">{error}</p>
+        <div className="error-state text-center text-lg text-red-600">{error}</div>
       ) : (
-        <div className="stats-container">
+        <div className="stats-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Biodata Statistics Section */}
-          <div className="stats-card">
-            <h2>Biodata Statistics</h2>
-            <ul className="stats-list">
-              <li>
-                <strong>Total Biodatas:</strong> {biodataStats.total}
-              </li>
-              <li>
-                <strong>Male Biodatas:</strong> {biodataStats.male}
-              </li>
-              <li>
-                <strong>Female Biodatas:</strong> {biodataStats.female}
-              </li>
-              <li>
-                <strong>Premium Biodatas:</strong> {biodataStats.premium}
-              </li>
-            </ul>
+          <div className="stats-card bg-white shadow-lg rounded-lg p-6 text-center">
+            <FaUsers className="text-5xl text-blue-600 mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Total Biodatas</h2>
+            <p className="text-2xl">{biodataStats.total}</p>
+          </div>
+
+          {/* Male Biodatas */}
+          <div className="stats-card bg-white shadow-lg rounded-lg p-6 text-center">
+            <FaMale className="text-5xl text-blue-600 mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Male Biodatas</h2>
+            <p className="text-2xl">{biodataStats.male}</p>
+          </div>
+
+          {/* Female Biodatas */}
+          <div className="stats-card bg-white shadow-lg rounded-lg p-6 text-center">
+            <FaFemale className="text-5xl text-pink-600 mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Female Biodatas</h2>
+            <p className="text-2xl">{biodataStats.female}</p>
+          </div>
+
+          {/* Premium Biodatas */}
+          <div className="stats-card bg-white shadow-lg rounded-lg p-6 text-center">
+            <FaStar className="text-5xl text-yellow-500 mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Premium Biodatas</h2>
+            <p className="text-2xl">{biodataStats.premium}</p>
           </div>
 
           {/* Revenue Section */}
-          <div className="stats-card">
-            <h2>Revenue</h2>
-            <p>
-              <strong>Total Revenue:</strong> ${biodataStats.revenue}
-            </p>
+          <div className="stats-card bg-white shadow-lg rounded-lg p-6 text-center">
+            <FaMoneyBillAlt className="text-5xl text-green-600 mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Total Revenue</h2>
+            <p className="text-2xl">${biodataStats.revenue}</p>
           </div>
         </div>
       )}
