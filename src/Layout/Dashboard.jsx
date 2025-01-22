@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
-import Navbar from "../Pages/Shared/Navbar/Navbar";
+
 import {
   FaEdit,
   FaEye,
@@ -11,12 +11,14 @@ import {
   FaUserShield,
   FaClipboardList,
 } from "react-icons/fa"; // Added relevant icons
-import useAdmin from "../hooks/useAdmin";
-import { useState } from "react";
+import useAuth from "../hooks/useAuth";
+import Navbar from "../Pages/Shared/Navbar";
+ // Import your auth hook to get the user
 
 const Dashboard = () => {
-  const [isAdmin] = useAdmin();
-  const [biodataId, setBiodataId] = useState(null);
+  
+  const { user } = useAuth(); 
+  const userId = user?.id; 
 
   return (
     <div className="font-sans">
@@ -25,7 +27,7 @@ const Dashboard = () => {
         {/* Sidebar */}
         <div className="w-64 min-h-screen bg-primary text-white py-5 px-6">
           <ul>
-            {isAdmin ? (
+            {/* {isAdmin ? ( */}
               <>
                 <li>
                   <NavLink
@@ -60,30 +62,14 @@ const Dashboard = () => {
                   </NavLink>
                 </li>
               </>
-            ) : (
+            {/* ) : (
               <>
                 <li>
                   <NavLink
                     className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
-                    to={"/dashboard/create-biodata"}
-                  >
-                    <FaEdit /> Create Biodata
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
-                    to={"/dashboard/edit-biodata"}
+                    to={`/dashboard/edit-biodata`}
                   >
                     <FaEdit /> Edit Biodata
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
-                    to={`/biodata/${biodataId || "loading"}`}
-                  >
-                    <FaEye /> {biodataId ? "View Biodata" : "Loading..."}
                   </NavLink>
                 </li>
                 <li>
@@ -97,7 +83,7 @@ const Dashboard = () => {
                 <li>
                   <NavLink
                     className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
-                    to={"/dashboard/favourites"}
+                    to={"/dashboard/my-favourites"}
                   >
                     <FaHeart /> My Favourites Biodata
                   </NavLink>
@@ -111,7 +97,7 @@ const Dashboard = () => {
                   </NavLink>
                 </li>
               </>
-            )}
+            )} */}
           </ul>
         </div>
 

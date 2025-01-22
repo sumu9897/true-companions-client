@@ -1,31 +1,47 @@
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import logo from "../../assets/logo.webp";
+import { AuthContext } from "../../providers/AuthProvider";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import logo from "../../../assets/logo.webp";
-import { AuthContext } from "../../../providers/AuthProvider";
 
 const Navbar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, logOut } = useContext(AuthContext);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Function to toggle the mobile menu
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+    setIsMobileMenuOpen((prev) => !prev);
   };
 
+  // Handle logout and display toast message
   const handleLogOut = () => {
     logOut()
       .then(() => {
-        toast.success("You have successfully logged out!", {
-          position: "top-center",
-          autoClose: 3000,
+        // Show success toast
+        toast.success("Logged out successfully!", {
+          position: "top-right",
+          autoClose: 1500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
         });
       })
       .catch((error) => {
-        console.error(error);
-        toast.error("Failed to log out. Please try again.", {
-          position: "top-center",
+        console.error("Logout error:", error.message);
+        // Show error toast
+        toast.error(`Error: ${error.message}`, {
+          position: "top-right",
           autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
         });
       });
   };
@@ -64,11 +80,14 @@ const Navbar = () => {
           Contact Us
         </Link>
       </li>
+
       {user ? (
         <>
+          {/* Show logged-in user's name */}
+          <span>{user?.displayName}</span>
           <li>
             <Link
-              to="/dashboard/"
+              to="/dashboard"
               className="text-gray-700 hover:text-indigo-500 font-medium transition"
             >
               Dashboard
@@ -76,32 +95,35 @@ const Navbar = () => {
           </li>
           <button
             onClick={handleLogOut}
-            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+            className="text-gray-700 hover:text-red-500 font-medium transition"
           >
             Log Out
           </button>
         </>
       ) : (
-        <li>
-          <Link
-            to="/login"
-            className="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition"
-          >
-            Login
-          </Link>
-        </li>
+        <>
+          <li>
+            <Link
+              to="/login"
+              className="text-gray-700 hover:text-indigo-500 font-medium transition"
+            >
+              Login
+            </Link>
+          </li>
+        </>
       )}
     </>
   );
 
   return (
     <nav className="bg-white shadow-md fixed top-0 w-full z-10">
-      <ToastContainer />
       <div className="container mx-auto px-4 md:px-8 lg:px-16 flex items-center justify-between h-16">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
           <img src={logo} alt="Website Logo" className="h-8 w-8" />
-          <span className="text-lg font-bold text-gray-700">True Companions</span>
+          <span className="text-lg font-bold text-gray-700">
+            True Companions
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -136,8 +158,13 @@ const Navbar = () => {
           isMobileMenuOpen ? "block" : "hidden"
         } md:hidden bg-white border-t border-gray-200`}
       >
-        <ul className="flex flex-col items-center space-y-4 py-4">{navOptions}</ul>
+        <ul className="flex flex-col items-center space-y-4 py-4">
+          {navOptions}
+        </ul>
       </div>
+
+      {/* Toast Container */}
+      <ToastContainer />
     </nav>
   );
 };
