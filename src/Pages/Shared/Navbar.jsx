@@ -87,7 +87,7 @@ const Navbar = () => {
           <span>{user?.displayName}</span>
           <li>
             <Link
-              to="/dashboard"
+              to="/dashboard/manage"
               className="text-gray-700 hover:text-indigo-500 font-medium transition"
             >
               Dashboard

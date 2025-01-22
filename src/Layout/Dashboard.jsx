@@ -1,5 +1,4 @@
 import { NavLink, Outlet } from "react-router-dom";
-
 import {
   FaEdit,
   FaEye,
@@ -16,9 +15,9 @@ import Navbar from "../Pages/Shared/Navbar";
  // Import your auth hook to get the user
 
 const Dashboard = () => {
-  
-  const { user } = useAuth(); 
-  const userId = user?.id; 
+  const isAdmin = true;
+  const { user } = useAuth(); // Assuming useAuth provides the logged-in user info
+  const userId = user?.id; // Replace 'id' with the actual property for the user ID in your auth system
 
   return (
     <div className="font-sans">
@@ -27,7 +26,7 @@ const Dashboard = () => {
         {/* Sidebar */}
         <div className="w-64 min-h-screen bg-primary text-white py-5 px-6">
           <ul>
-            {/* {isAdmin ? ( */}
+            {isAdmin ? (
               <>
                 <li>
                   <NavLink
@@ -62,7 +61,7 @@ const Dashboard = () => {
                   </NavLink>
                 </li>
               </>
-            {/* ) : (
+            ) : (
               <>
                 <li>
                   <NavLink
@@ -97,7 +96,7 @@ const Dashboard = () => {
                   </NavLink>
                 </li>
               </>
-            )} */}
+            )}
           </ul>
         </div>
 
