@@ -9,6 +9,11 @@ import SignUp from "../Pages/SignUp/SignUp";
 import Dashboard from "../Layout/Dashboard";
 import ManageUsers from "../Pages/Dashboard/Admin/ManageUsers";
 import PrivateRoute from "./PrivateRoute";
+import EditBiodata from "../Pages/Dashboard/User/EditBiodata";
+import ViewBiodata from "../Pages/Dashboard/User/ViewBiodata";
+import AdminRoute from "./AdminRoute";
+import BiodatasPage from "../Pages/BiodatasPage/BiodatasPage";
+import BiodataDetails from "../Pages/BiodataDetails/BiodataDetails";
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +24,10 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <Home></Home>,
+      },
+      {
+        path: "/biodatapage",
+        element: <BiodatasPage></BiodatasPage>
       },
       {
         path: "/about",
@@ -35,6 +44,10 @@ export const router = createBrowserRouter([
       {
         path: 'signup',
         element: <SignUp></SignUp>
+      },
+      {
+        path: "/biodata/:id",
+        element: <BiodataDetails></BiodataDetails>
       }
     ],
   },{
@@ -43,7 +56,15 @@ export const router = createBrowserRouter([
     children: [
       {
         path: 'manage',
-        element :<ManageUsers></ManageUsers>
+        element :<AdminRoute><ManageUsers></ManageUsers></AdminRoute>,
+      },
+      {
+        path: 'edit-biodata',
+        element: <EditBiodata></EditBiodata>
+      },
+      {
+        path: 'view-biodata',
+        element: <ViewBiodata></ViewBiodata>
       }
     ]
   }

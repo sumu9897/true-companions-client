@@ -84,10 +84,10 @@ const Navbar = () => {
       {user ? (
         <>
           {/* Show logged-in user's name */}
-          <span>{user?.displayName}</span>
+          {/* <span>{user?.displayName}</span> */}
           <li>
             <Link
-              to="/dashboard/manage"
+              to="/dashboard/"
               className="text-gray-700 hover:text-indigo-500 font-medium transition"
             >
               Dashboard

@@ -12,10 +12,11 @@ import {
 } from "react-icons/fa"; // Added relevant icons
 import useAuth from "../hooks/useAuth";
 import Navbar from "../Pages/Shared/Navbar";
+import useAdmin from "../hooks/useAdmin";
  // Import your auth hook to get the user
 
 const Dashboard = () => {
-  const isAdmin = true;
+  const [isAdmin] = useAdmin()
   const { user } = useAuth(); // Assuming useAuth provides the logged-in user info
   const userId = user?.id; // Replace 'id' with the actual property for the user ID in your auth system
 
@@ -69,6 +70,14 @@ const Dashboard = () => {
                     to={`/dashboard/edit-biodata`}
                   >
                     <FaEdit /> Edit Biodata
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
+                    to={`/dashboard/view-biodata`}
+                  >
+                    <FaEdit /> View Biodata
                   </NavLink>
                 </li>
                 <li>
