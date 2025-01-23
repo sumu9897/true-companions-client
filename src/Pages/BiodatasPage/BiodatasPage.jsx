@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
+import Loading from "../../Components/Loading";
 
 const BiodatasPage = () => {
   const axiosSecure = useAxiosSecure();
@@ -46,7 +47,7 @@ const BiodatasPage = () => {
       ...prev,
       [name]: name === "ageRange" ? value.split(",").map(Number) : value,
     }));
-    setCurrentPage(1); // Reset to first page on filter change
+    setCurrentPage(1); 
     refetch();
   };
 
@@ -111,7 +112,7 @@ const BiodatasPage = () => {
         <h3 className="text-lg font-semibold mb-4">All Biodatas</h3>
 
         {isLoading ? (
-          <p className="text-center">Loading...</p>
+          <p className="text-center"><Loading></Loading></p>
         ) : isError ? (
           <p className="text-center text-red-500">Failed to load biodatas.</p>
         ) : (

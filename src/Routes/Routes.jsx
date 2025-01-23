@@ -21,6 +21,8 @@ import GotMarriedForm from "../Pages/Dashboard/User/GotMarriedForm";
 import CheckOut from "../Pages/Dashboard/User/CheckOut";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
+import DashboardPage from "../Pages/Dashboard/Admin/DashboardPage";
+import ApprovedContactReq from "../Pages/Dashboard/Admin/ApprovedContactReq";
 
 const stripePromise = loadStripe(import.meta.env.VITE_Payment_Gateway_PK)
 
@@ -60,44 +62,57 @@ export const router = createBrowserRouter([
         element: <BiodataDetails></BiodataDetails>
       }
     ],
-  },{
+  },
+  {
     path: 'dashboard',
-    element:<PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
+    element: <PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
     children: [
       {
         path: 'manage',
-        element :<AdminRoute><ManageUsers></ManageUsers></AdminRoute>
-      },{
+        element: <AdminRoute><ManageUsers></ManageUsers></AdminRoute>,
+      },
+      {
+        path: 'admin',
+        element: <AdminRoute><DashboardPage></DashboardPage></AdminRoute>,
+      },
+      {
         path: 'approvedPremium',
-        element: <AdminRoute><ApprovedPremium></ApprovedPremium></AdminRoute>
+        element: <AdminRoute><ApprovedPremium></ApprovedPremium></AdminRoute>,
+      },
+      {
+        path: 'approvedContactRequest',
+        element: <AdminRoute><ApprovedContactReq></ApprovedContactReq></AdminRoute>,
       },
       {
         path: 'edit-biodata',
-        element: <EditBiodata></EditBiodata>
+        element: <EditBiodata></EditBiodata>,
       },
       {
         path: 'view-biodata',
-        element: <ViewBiodata></ViewBiodata>
-      },{
-        path: 'contact-request',
-        element: <MyContactRequest></MyContactRequest>
-      },{
-        path: 'my-favourites',
-        element: <FavouriteBiodata></FavouriteBiodata>
+        element: <ViewBiodata></ViewBiodata>,
       },
       {
-        path: "got-married",
-        element: <GotMarriedForm></GotMarriedForm>
-      }
-      ,{
-        path: 'checkout/id',
+        path: 'contact-request',
+        element: <MyContactRequest></MyContactRequest>,
+      },
+      {
+        path: 'my-favourites',
+        element: <FavouriteBiodata></FavouriteBiodata>,
+      },
+      {
+        path: 'got-married',
+        element: <GotMarriedForm></GotMarriedForm>,
+      },
+      {
+        path: 'checkout/:id',
         element: (
           <Elements stripe={stripePromise}>
             <CheckOut />
           </Elements>
         ),
-      }
-
-    ]
+      },
+    ],
   }
+  
+  
 ]);
