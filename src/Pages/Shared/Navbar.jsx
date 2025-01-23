@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.webp";
 import { AuthContext } from "../../providers/AuthProvider";
 import { ToastContainer, toast } from "react-toastify";
@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Function to toggle the mobile menu
   const toggleMobileMenu = () => {
@@ -29,6 +30,7 @@ const Navbar = () => {
           progress: undefined,
           theme: "colored",
         });
+        navigate("/");
       })
       .catch((error) => {
         console.error("Logout error:", error.message);

@@ -60,7 +60,18 @@ export const router = createBrowserRouter([
       {
         path: "/biodata/:id",
         element: <BiodataDetails></BiodataDetails>
-      }
+      },
+      
+      {
+        path: 'checkout/:id',
+        element: (<PrivateRoute>
+          
+          <Elements stripe={stripePromise}>
+            <CheckOut />
+          </Elements>
+        </PrivateRoute>
+        ),
+      },
     ],
   },
   {
@@ -102,14 +113,6 @@ export const router = createBrowserRouter([
       {
         path: 'got-married',
         element: <GotMarriedForm></GotMarriedForm>,
-      },
-      {
-        path: 'checkout/:id',
-        element: (
-          <Elements stripe={stripePromise}>
-            <CheckOut />
-          </Elements>
-        ),
       },
     ],
   }
