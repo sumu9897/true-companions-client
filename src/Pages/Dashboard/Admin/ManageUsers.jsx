@@ -1,81 +1,113 @@
-import {useQuery} from '@tanstack/react-query';
-import { FaTrashAlt, FaUsers } from 'react-icons/fa';
-import Swal from 'sweetalert2';
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
-
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { FaTrashAlt, FaUsers, FaCrown } from "react-icons/fa";
+import Swal from "sweetalert2";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const ManageUsers = () => {
-  const axiosSecure = useAxiosSecure()
-  const {data: users= [], refetch} = useQuery({
-    queryKey: ['users'],
-    queryFn: async ()=> {
-      const res = await axiosSecure.get('/users', {
+  const axiosSecure = useAxiosSecure();
+  const [searchTerm, setSearchTerm] = useState(""); // State for search input
+
+  const { data: users = [], refetch } = useQuery({
+    queryKey: ["users", searchTerm],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/users?search=${searchTerm}`, {
         headers: {
-          authorization: `Bearer ${localStorage.getItem('access-token')}`
-        }
+          authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
       });
       return res.data;
+    },
+  });
 
-    }
-  })
+  const handleMakeAdmin = (user) => {
+    axiosSecure.patch(`/users/admin/${user._id}`).then((res) => {
+      if (res.data.modifiedCount > 0) {
+        refetch();
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: `${user.name} is now an Admin!`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    });
+  };
 
-  const handleMakeAdmin = user =>{
-    axiosSecure.patch(`/users/admin/${user._id}`)
-    .then(res =>{
-        console.log(res.data)
-        if(res.data.modifiedCount > 0){
+  const handleMakePremium = (user) => {
+    axiosSecure.patch(`/users/premium/${user._id}`).then((res) => {
+      if (res.data.modifiedCount > 0) {
+        refetch();
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: `${user.name} is now a Premium User!`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    });
+  };
+
+  const handleDeleteUser = (user) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosSecure.delete(`/users/${user._id}`).then((res) => {
+          if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire({
-                position: "top-end",
-                icon: "success",
-                title: `${user.name} is an Admin Now!`,
-                showConfirmButton: false,
-                timer: 1500
-              });
-        }
-    })
-}
-
-const handleDeleteUser = user => {
-    Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-        if (result.isConfirmed) {
-
-            axiosSecure.delete(`/users/${user._id}`)
-                .then(res => {
-                    if (res.data.deletedCount > 0) {
-                        refetch();
-                        Swal.fire({
-                            title: "Deleted!",
-                            text: "Your file has been deleted.",
-                            icon: "success"
-                        });
-                    }
-                })
-        }
+              title: "Deleted!",
+              text: "User has been deleted.",
+              icon: "success",
+            });
+          }
+        });
+      }
     });
-}
+  };
+
   return (
     <div>
-      <div className="mb-6">
-        <h2 className="text-3xl font-semibold text-gray-800">Total Users: {users.length}</h2>
+      <div className="mb-6 flex justify-between items-center">
+        <h2 className="text-3xl font-semibold text-gray-800">
+          Total Users: {users.length}
+        </h2>
+        <input
+          type="text"
+          placeholder="Search by username"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="p-2 border rounded-md"
+        />
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-gray-50 rounded-lg border border-gray-200">
           <thead className="bg-gray-200">
             <tr>
-              <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">#</th>
-              <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Name</th>
-              <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Email</th>
-              <th className="py-3 px-4 text-center text-sm font-medium text-gray-600">Role</th>
-              <th className="py-3 px-4 text-center text-sm font-medium text-gray-600">Action</th>
+              <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">
+                #
+              </th>
+              <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">
+                Name
+              </th>
+              <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">
+                Email
+              </th>
+              <th className="py-3 px-4 text-center text-sm font-medium text-gray-600">
+                Role
+              </th>
+              <th className="py-3 px-4 text-center text-sm font-medium text-gray-600">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -89,13 +121,25 @@ const handleDeleteUser = user => {
                     <span className="px-3 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
                       Admin
                     </span>
+                  ) : user.role === "premium" ? (
+                    <span className="px-3 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-full">
+                      Premium
+                    </span>
                   ) : (
-                    <button
-                      onClick={() => handleMakeAdmin(user)}
-                      className="bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition"
-                    >
-                      <FaUsers className="text-white text-lg" />
-                    </button>
+                    <div className="flex justify-center gap-2">
+                      <button
+                        onClick={() => handleMakeAdmin(user)}
+                        className="bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition"
+                      >
+                        <FaUsers className="text-white text-lg" />
+                      </button>
+                      <button
+                        onClick={() => handleMakePremium(user)}
+                        className="bg-yellow-500 text-white rounded-full p-2 hover:bg-yellow-600 transition"
+                      >
+                        <FaCrown className="text-white text-lg" />
+                      </button>
+                    </div>
                   )}
                 </td>
                 <td className="py-3 px-4 text-center">
@@ -113,7 +157,7 @@ const handleDeleteUser = user => {
         </table>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ManageUsers
+export default ManageUsers;

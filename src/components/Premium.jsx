@@ -7,7 +7,7 @@ const Premium = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch premium profiles based on sort order
+    // Fetch premium profiles where premiumStatus is 'approved'
     fetch(`/premium-profiles?order=${sortOrder}`)
       .then((res) => res.json())
       .then((data) => setProfiles(data))
@@ -19,7 +19,7 @@ const Premium = () => {
   };
 
   const handleViewProfile = (id) => {
-    navigate(`/profile/${id}`); // Redirect to the profile details page
+    navigate(`/profile/${id}`);
   };
 
   return (
@@ -28,7 +28,9 @@ const Premium = () => {
 
       {/* Dropdown for sorting */}
       <div className="flex justify-end mt-4">
-        <label htmlFor="sortOrder" className="mr-2">Sort by Age:</label>
+        <label htmlFor="sortOrder" className="mr-2">
+          Sort by Age:
+        </label>
         <select
           id="sortOrder"
           value={sortOrder}
@@ -43,9 +45,12 @@ const Premium = () => {
       {/* Profiles Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
         {profiles.map((profile) => (
-          <div key={profile._id} className="card border p-4 rounded-md shadow-lg">
+          <div
+            key={profile._id}
+            className="card border p-4 rounded-md shadow-lg"
+          >
             <img
-              src={profile.profileImage}
+              src={profile.profileImage || "https://via.placeholder.com/150"}
               alt={`Profile of ${profile.biodataId}`}
               className="rounded-md w-full h-40 object-cover"
             />

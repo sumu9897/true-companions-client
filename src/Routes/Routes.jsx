@@ -66,7 +66,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: 'manage',
-        element :<ManageUsers/>
+        element :<AdminRoute><ManageUsers></ManageUsers></AdminRoute>
       },{
         path: 'approvedPremium',
         element: <AdminRoute><ApprovedPremium></ApprovedPremium></AdminRoute>
