@@ -16,7 +16,8 @@ import useAdmin from "../hooks/useAdmin";
  // Import your auth hook to get the user
 
 const Dashboard = () => {
-  const [isAdmin] = useAdmin()
+  // const [isAdmin] = useAdmin()
+  const isAdmin = 'admin';
   const { user } = useAuth(); // Assuming useAuth provides the logged-in user info
   const userId = user?.id; // Replace 'id' with the actual property for the user ID in your auth system
 

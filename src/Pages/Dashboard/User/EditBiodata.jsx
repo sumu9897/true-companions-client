@@ -3,6 +3,8 @@ import { AuthContext } from "../../../providers/AuthProvider";
 import { useForm } from "react-hook-form";
 import useAxiosPublic from "../../../hooks/useAxiosPublic";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { Helmet } from "react-helmet-async";
+import Swal from "sweetalert2";
 
 const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
@@ -78,46 +80,61 @@ const EditBiodata = () => {
   }, [dob, setValue]);
 
   const onSubmit = async (data) => {
-    console.log(data);
-
-    const imageFile = { image: data.image[0] };
-    const res = await axiosPublic.post(image_hosting_api, imageFile, {
-      headers: {
-        "content-type": "multipart/form-data",
-      },
-    });
-    if(res.data.success){
-      const bioData = {
-        biodataType: data.biodataType,
-        name: data.name,
-        profileImage: res.data.data.url, 
-        dob: data.dob,
-        age: data.age,
-        height: data.height,
-        weight: data.weight,
-        occupation: data.occupation,
-        race: data.race,
-        fatherName: data.fatherName,
-        motherName: data.motherName,
-        permanentDivision: data.permanentDivision,
-        presentDivision: data.presentDivision,
-        expectedPartnerAge: data.expectedPartnerAge,
-        expectedPartnerHeight: data.expectedPartnerHeight,
-        expectedPartnerWeight: data.expectedPartnerWeight,
-        mobileNumber: data.mobileNumber,
-        email: data.email,
-
+    try {
+      const imageFile = { image: data.image[0] };
+      const res = await axiosPublic.post(image_hosting_api, imageFile, {
+        headers: {
+          "content-type": "multipart/form-data",
+        },
+      });
+      if (res.data.success) {
+        const bioData = {
+          biodataType: data.biodataType,
+          name: data.name,
+          profileImage: res.data.data.url,
+          dob: data.dob,
+          age: data.age,
+          height: data.height,
+          weight: data.weight,
+          occupation: data.occupation,
+          race: data.race,
+          fatherName: data.fatherName,
+          motherName: data.motherName,
+          permanentDivision: data.permanentDivision,
+          presentDivision: data.presentDivision,
+          expectedPartnerAge: data.expectedPartnerAge,
+          expectedPartnerHeight: data.expectedPartnerHeight,
+          expectedPartnerWeight: data.expectedPartnerWeight,
+          mobileNumber: data.mobileNumber,
+          email: data.email,
+        };
+        const bioRes = await axiosSecure.post("/biodatas", bioData);
+        if (bioRes.data.insertedId) {
+          Swal.fire({
+            title: "Success!",
+            text: "Biodata added successfully!",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+          // reset();
+        }
       }
-      const bioRes = await axiosSecure.post('/biodatas', bioData)
-      console.log(bioRes.data)
-      if(bioRes.data.insertedId){
-        
-      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: "An error occurred while adding biodata.",
+        icon: "error",
+        confirmButtonText: "Try Again",
+      });
+      console.error(error);
     }
-    console.log(res.data);
   };
+  
   return (
     <div>
+      <Helmet>
+       <title> Edit Biodata</title>
+      </Helmet>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700">

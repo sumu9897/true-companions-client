@@ -14,6 +14,16 @@ import ViewBiodata from "../Pages/Dashboard/User/ViewBiodata";
 import AdminRoute from "./AdminRoute";
 import BiodatasPage from "../Pages/BiodatasPage/BiodatasPage";
 import BiodataDetails from "../Pages/BiodataDetails/BiodataDetails";
+import ApprovedPremium from "../Pages/Dashboard/Admin/ApprovedPremium";
+import MyContactRequest from "../Pages/Dashboard/User/MyContactRequest";
+import FavouriteBiodata from "../Pages/Dashboard/User/FavouriteBiodata";
+import GotMarriedForm from "../Pages/Dashboard/User/GotMarriedForm";
+import CheckOut from "../Pages/Dashboard/User/CheckOut";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+
+const stripePromise = loadStripe(import.meta.env.VITE_Payment_Gateway_PK)
+
 
 export const router = createBrowserRouter([
   {
@@ -56,7 +66,10 @@ export const router = createBrowserRouter([
     children: [
       {
         path: 'manage',
-        element :<AdminRoute><ManageUsers></ManageUsers></AdminRoute>,
+        element :<ManageUsers/>
+      },{
+        path: 'approvedPremium',
+        element: <AdminRoute><ApprovedPremium></ApprovedPremium></AdminRoute>
       },
       {
         path: 'edit-biodata',
@@ -65,7 +78,26 @@ export const router = createBrowserRouter([
       {
         path: 'view-biodata',
         element: <ViewBiodata></ViewBiodata>
+      },{
+        path: 'contact-request',
+        element: <MyContactRequest></MyContactRequest>
+      },{
+        path: 'my-favourites',
+        element: <FavouriteBiodata></FavouriteBiodata>
+      },
+      {
+        path: "got-married",
+        element: <GotMarriedForm></GotMarriedForm>
       }
+      ,{
+        path: 'checkout/id',
+        element: (
+          <Elements stripe={stripePromise}>
+            <CheckOut />
+          </Elements>
+        ),
+      }
+
     ]
   }
 ]);

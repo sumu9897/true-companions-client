@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
+import Swal from "sweetalert2"; // import SweetAlert2
 
 const BiodataDetails = () => {
   const { id } = useParams();
@@ -14,7 +15,7 @@ const BiodataDetails = () => {
   useEffect(() => {
     const fetchBiodataDetails = async () => {
       try {
-        const res = await axiosSecure.get(`/biodatas/${id}`, {
+        const res = await axiosSecure.get(`/biodata/${id}`, {
           headers: {
             authorization: `Bearer ${localStorage.getItem("access-token")}`,
           },
@@ -56,9 +57,20 @@ const BiodataDetails = () => {
           },
         }
       );
-      alert("Biodata added to favorites.");
+      Swal.fire({
+        title: "Success!",
+        text: "Biodata added to favorites.",
+        icon: "success",
+        confirmButtonText: "Okay",
+      });
     } catch (error) {
       console.error("Error adding to favorites:", error);
+      Swal.fire({
+        title: "Error",
+        text: "There was an issue adding to favorites.",
+        icon: "error",
+        confirmButtonText: "Okay",
+      });
     }
   };
 

@@ -7,15 +7,17 @@ const BiodatasPage = () => {
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 
-  // State for filters
+  // State for filters and pagination
   const [filters, setFilters] = useState({
     ageRange: [0, 100],
     type: "",
     division: "",
   });
+  const [currentPage, setCurrentPage] = useState(1); // Pagination state
+  const itemsPerPage = 20; // Number of items per page
 
-  const { data: biodatas = [], isError, isLoading, refetch } = useQuery({
-    queryKey: ["biodatas", filters],
+  const { data, isError, isLoading, refetch } = useQuery({
+    queryKey: ["biodatas", filters, currentPage],
     queryFn: async () => {
       const res = await axiosSecure.get("/biodatas", {
         headers: {
@@ -26,11 +28,17 @@ const BiodatasPage = () => {
           ageMax: filters.ageRange[1] || 100,
           biodataType: filters.type || undefined,
           division: filters.division || undefined,
+          page: currentPage,
+          limit: itemsPerPage,
         },
       });
-      return res.data.biodatas; // Return only the biodatas array
+      return res.data; 
     },
   });
+
+  const biodatas = data?.biodatas || [];
+  const totalItems = data?.total || 0;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -38,6 +46,12 @@ const BiodatasPage = () => {
       ...prev,
       [name]: name === "ageRange" ? value.split(",").map(Number) : value,
     }));
+    setCurrentPage(1); // Reset to first page on filter change
+    refetch();
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
     refetch();
   };
 
@@ -101,35 +115,58 @@ const BiodatasPage = () => {
         ) : isError ? (
           <p className="text-center text-red-500">Failed to load biodatas.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {biodatas.length > 0 ? (
-              biodatas.map((biodata) => (
-                <div
-                  key={biodata._id}
-                  className="biodata-card border rounded-lg shadow-md p-4 flex flex-col items-center"
-                >
-                  <img
-                    src={biodata.profileImage || "https://via.placeholder.com/150"}
-                    alt="Profile"
-                    className="w-24 h-24 rounded-full object-cover mb-4"
-                  />
-                  <p className="text-sm font-semibold">Biodata ID: {biodata.biodataId}</p>
-                  <p className="text-sm">Type: {biodata.biodataType}</p>
-                  <p className="text-sm">Division: {biodata.permanentDivision}</p>
-                  <p className="text-sm">Age: {biodata.age}</p>
-                  <p className="text-sm">Occupation: {biodata.occupation}</p>
-                  <button
-                    onClick={() => handleViewProfile(biodata._id)}
-                    className="mt-4 bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {biodatas.length > 0 ? (
+                biodatas.map((biodata) => (
+                  <div
+                    key={biodata._id}
+                    className="biodata-card border rounded-lg shadow-md p-4 flex flex-col items-center"
                   >
-                    View Profile
-                  </button>
-                </div>
-              ))
-            ) : (
-              <p className="col-span-full text-center text-gray-500">No biodatas found.</p>
-            )}
-          </div>
+                    <img
+                      src={biodata.profileImage || "https://via.placeholder.com/150"}
+                      alt="Profile"
+                      className="w-24 h-24 rounded-full object-cover mb-4"
+                    />
+                    <p className="text-sm font-semibold">
+                      Biodata ID: {biodata.biodataId}
+                    </p>
+                    <p className="text-sm">Type: {biodata.biodataType}</p>
+                    <p className="text-sm">Division: {biodata.permanentDivision}</p>
+                    <p className="text-sm">Age: {biodata.age}</p>
+                    <p className="text-sm">Occupation: {biodata.occupation}</p>
+                    <button
+                      onClick={() => handleViewProfile(biodata._id)}
+                      className="mt-4 bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+                    >
+                      View Profile
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p className="col-span-full text-center text-gray-500">
+                  No biodatas found.
+                </p>
+              )}
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="pagination mt-6 flex justify-center gap-2">
+              {Array.from({ length: totalPages }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => handlePageChange(index + 1)}
+                  className={`px-4 py-2 rounded shadow ${
+                    currentPage === index + 1
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

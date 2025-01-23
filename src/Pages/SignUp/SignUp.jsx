@@ -72,13 +72,13 @@ const SignUp = () => {
                         if (res.data.insertedId) {
                           console.log('user added to the database')
                           reset();
-                          Swal.fire({
-                            position: "top-end",
-                            icon: "success",
-                            title: "User created successfully",
-                            showCancelButton: false,
-                            timer: 1500,
-                          });
+                          // Swal.fire({
+                          //   position: "top-end",
+                          //   icon: "success",
+                          //   title: "User created successfully",
+                          //   showCancelButton: false,
+                          //   timer: 1500,
+                          // });
                           navigate("/");
                         }
                       });
