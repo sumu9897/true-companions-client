@@ -19,12 +19,10 @@ import MyContactRequest from "../Pages/Dashboard/User/MyContactRequest";
 import FavouriteBiodata from "../Pages/Dashboard/User/FavouriteBiodata";
 import GotMarriedForm from "../Pages/Dashboard/User/GotMarriedForm";
 import CheckOut from "../Pages/Dashboard/User/CheckOut";
-import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import DashboardPage from "../Pages/Dashboard/Admin/DashboardPage";
 import ApprovedContactReq from "../Pages/Dashboard/Admin/ApprovedContactReq";
 
-const stripePromise = loadStripe(import.meta.env.VITE_Payment_Gateway_PK)
 
 
 export const router = createBrowserRouter([
@@ -64,13 +62,7 @@ export const router = createBrowserRouter([
       
       {
         path: 'checkout/:id',
-        element: (<PrivateRoute>
-          
-          <Elements stripe={stripePromise}>
-            <CheckOut />
-          </Elements>
-        </PrivateRoute>
-        ),
+        element: <CheckOut></CheckOut>
       },
     ],
   },
