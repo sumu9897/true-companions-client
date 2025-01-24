@@ -4,11 +4,13 @@ import logo from "../../assets/logo.webp";
 import { AuthContext } from "../../providers/AuthProvider";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import useAdmin from "../../hooks/useAdmin";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const [isAdmin] = useAdmin();
 
   // Function to toggle the mobile menu
   const toggleMobileMenu = () => {
@@ -87,14 +89,28 @@ const Navbar = () => {
         <>
           {/* Show logged-in user's name */}
           {/* <span>{user?.displayName}</span> */}
-          <li>
+          {
+            user && !isAdmin && <li>
             <Link
-              to="/dashboard/"
+              to="/dashboard/edit-biodata"
               className="text-gray-700 hover:text-indigo-500 font-medium transition"
             >
               Dashboard
             </Link>
           </li>
+          }
+          {
+            user && isAdmin && <li>
+            <Link
+              to="/dashboard/admin"
+              className="text-gray-700 hover:text-indigo-500 font-medium transition"
+            >
+              Dashboard
+            </Link>
+          </li>
+          }
+          
+          
           <button
             onClick={handleLogOut}
             className="text-gray-700 hover:text-red-500 font-medium transition"
