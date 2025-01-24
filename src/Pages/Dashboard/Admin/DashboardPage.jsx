@@ -28,8 +28,8 @@ const DashboardPage = () => {
       <h1 className="text-3xl font-semibold text-gray-800 mb-6">Admin Dashboard</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-white shadow rounded-lg p-4 border border-gray-200">
-          <h2 className="text-lg font-medium text-gray-600">{stats.biodataCount}</h2>
-          <p className="text-2xl font-semibold text-gray-800">Total</p>
+          <h2 className="text-lg font-medium text-gray-600">Total</h2>
+          <p className="text-2xl font-semibold text-gray-800">{stats.biodataCount}</p>
         </div>
         <div className="bg-white shadow rounded-lg p-4 border border-gray-200">
           <h2 className="text-lg font-medium text-gray-600">Male Biodata</h2>

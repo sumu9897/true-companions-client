@@ -1,16 +1,21 @@
 import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaStar } from "react-icons/fa";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
 
 const GotMarriedForm = () => {
+  const axiosSecure = useAxiosSecure();
   const [formData, setFormData] = useState({
     selfBiodataId: "",
     partnerBiodataId: "",
     coupleImage: "",
     successStory: "",
+    marriageDate: "",
+    reviewStar: 0,
   });
   const [uploading, setUploading] = useState(false);
 
@@ -37,7 +42,7 @@ const GotMarriedForm = () => {
       if (data.success) {
         setFormData((prevData) => ({
           ...prevData,
-          coupleImage: data.data.display_url, // Set the image URL
+          coupleImage: data.data.display_url,
         }));
         toast.success("Image uploaded successfully!");
       } else {
@@ -51,41 +56,43 @@ const GotMarriedForm = () => {
     }
   };
 
+  const handleStarClick = (rating) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      reviewStar: rating,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate required fields
-    if (!formData.selfBiodataId || !formData.partnerBiodataId || !formData.successStory) {
+    if (
+      !formData.selfBiodataId ||
+      !formData.partnerBiodataId ||
+      !formData.successStory ||
+      !formData.marriageDate ||
+      !formData.reviewStar
+    ) {
       toast.error("Please fill out all required fields.");
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:5000/successStory", {
-        // Replace with your actual backend API URL
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // Assuming token is stored in localStorage
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(errorMessage || "Failed to submit the success story.");
-      }
-
+      const response = await axiosSecure.post("/successStory", formData);
       toast.success("Success story submitted successfully!");
       setFormData({
         selfBiodataId: "",
         partnerBiodataId: "",
         coupleImage: "",
         successStory: "",
+        marriageDate: "",
+        reviewStar: 0,
       });
     } catch (error) {
       console.error("Error submitting success story:", error);
-      toast.error(error.message || "An error occurred. Please try again later.");
+      toast.error(
+        error.response?.data?.message || "An error occurred. Please try again later."
+      );
     }
   };
 
@@ -140,6 +147,36 @@ const GotMarriedForm = () => {
               className="mt-4 w-32 h-32 object-cover rounded-md"
             />
           )}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Marriage Date:
+          </label>
+          <input
+            type="date"
+            name="marriageDate"
+            value={formData.marriageDate}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Review Star:
+          </label>
+          <div className="flex space-x-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <FaStar
+                key={star}
+                size={24}
+                className={`cursor-pointer ${
+                  formData.reviewStar >= star ? "text-yellow-500" : "text-gray-300"
+                }`}
+                onClick={() => handleStarClick(star)}
+              />
+            ))}
+          </div>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -9,7 +9,9 @@ import {
   FaClipboardCheck,
   FaUserShield,
   FaClipboardList,
-} from "react-icons/fa"; // Added relevant icons
+} from "react-icons/fa"; 
+import { FcViewDetails } from "react-icons/fc";
+
 import useAuth from "../hooks/useAuth";
 import Navbar from "../Pages/Shared/Navbar";
 import useAdmin from "../hooks/useAdmin";
@@ -78,7 +80,7 @@ const Dashboard = () => {
                     className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
                     to={`/dashboard/view-biodata`}
                   >
-                    <FaEdit /> View Biodata
+                    <FcViewDetails /> View Biodata
                   </NavLink>
                 </li>
                 <li>

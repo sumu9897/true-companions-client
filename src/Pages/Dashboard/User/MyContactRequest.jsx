@@ -10,7 +10,7 @@ const MyContactRequest = () => {
     useEffect(() => {
       const fetchContactRequests = async () => {
         try {
-          const { data } = await axiosSecure.get("/contact-requests");
+          const { data } = await axiosSecure.get("/payments");
           setContactRequests(data);
         } catch (error) {
           console.error("Error fetching contact requests:", error);

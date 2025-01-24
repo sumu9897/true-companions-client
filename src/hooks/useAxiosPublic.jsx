@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const axiosPublic = axios.create({
-    baseURL: 'http://localhost:5500'
+    baseURL: 'https://true-companions-server.vercel.app'
 })
 const useAxiosPublic = () => {
   return axiosPublic
