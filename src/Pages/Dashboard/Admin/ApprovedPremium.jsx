@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
-import Loading from '../../../Components/Loading';
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
-import useAxiosPublic from '../../../hooks/useAxiosPublic';
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import Loading from "../../../Components/Loading";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useAxiosPublic from "../../../hooks/useAxiosPublic";
 
 const ApprovedPremium = () => {
   const [users, setUsers] = useState([]);
@@ -14,12 +14,11 @@ const ApprovedPremium = () => {
     const fetchPendingRequests = async () => {
       setLoading(true);
       try {
-
         const res = await axiosSecure.get(`/admin/biodatas`);
         setUsers(res.data.biodatas);
       } catch (error) {
-        console.error('Error fetching biodatas:', error);
-        toast.error('Failed to fetch biodata requests.');
+        console.error("Error fetching biodatas:", error);
+        toast.error("Failed to fetch biodata requests.");
       } finally {
         setLoading(false);
       }
@@ -28,26 +27,30 @@ const ApprovedPremium = () => {
     fetchPendingRequests();
   }, []);
 
-  const handleMakePremium = async (biodataId) => {
-    console.log('Approving biodata with ID:', biodataId);
+  const handleMakePremium = async (id) => {
+    console.log("Approving biodata with ID:", id);
 
     try {
-      const res = await axiosSecure.post(`/admin/biodatas/${biodataId}/approve`);
+      const res = await axiosSecure.patch(
+        `/admin/biodatas/${id}/approve`
+      );
       if (res.data.success) {
-        toast.success(`Biodata with ID ${biodataId} marked as premium!`);
+        toast.success(`Biodata with ID ${id} marked as premium!`);
         setUsers(users.filter((user) => user.biodataId !== biodataId));
       } else {
-        toast.error('Failed to approve biodata.');
+        toast.error("Failed to approve biodata.");
       }
     } catch (error) {
-      console.error('Error making premium:', error);
-      toast.error('Error marking biodata as premium.');
+      console.error("Error making premium:", error);
+      toast.error("Error marking biodata as premium.");
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold mb-6 text-center">Approve Premium Requests</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center">
+        Approve Premium Requests
+      </h1>
 
       {loading ? (
         <div className="flex justify-center items-center">

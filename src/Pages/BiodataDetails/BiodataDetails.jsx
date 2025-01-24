@@ -19,16 +19,17 @@ const BiodataDetails = () => {
       try {
         const res = await axiosSecure.get(`/biodata/${id}`);
         setBiodata(res.data);
-    
+      
+        // Fetch similar biodatas based on type
         const similarRes = await axiosSecure.get("/biodatas", {
-          params: { type: res.data.biodataType },
+          params: { biodataType: res.data.biodataType }, 
           headers: {
             authorization: `Bearer ${localStorage.getItem("access-token")}`,
           },
         });
-    
+      
         console.log("Similar biodatas response:", similarRes.data);
-    
+      
         if (Array.isArray(similarRes.data.biodatas)) {
           setSimilarBiodatas(similarRes.data.biodatas.slice(0, 3));
         } else {
@@ -38,7 +39,7 @@ const BiodataDetails = () => {
           );
           setSimilarBiodatas([]);
         }
-    
+      
         const userRes = await axiosSecure.get("/user/me", {
           headers: {
             authorization: `Bearer ${localStorage.getItem("access-token")}`,
@@ -51,10 +52,10 @@ const BiodataDetails = () => {
         setLoading(false);
       }
     };
-    
-
+  
     fetchBiodataDetails();
   }, [id, axiosSecure]);
+  
 
   const handleAddToFavorites = async () => {
     try {

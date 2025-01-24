@@ -14,8 +14,8 @@ const BiodatasPage = () => {
     type: "",
     division: "",
   });
-  const [currentPage, setCurrentPage] = useState(1); // Pagination state
-  const itemsPerPage = 20; // Number of items per page
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20; 
 
   const { data, isError, isLoading, refetch } = useQuery({
     queryKey: ["biodatas", filters, currentPage],

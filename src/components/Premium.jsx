@@ -1,74 +1,98 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../hooks/useAxiosSecure";
 import { useNavigate } from "react-router-dom";
+import Loading from "../Components/Loading";
 
 const Premium = () => {
-  const [profiles, setProfiles] = useState([]);
-  const [sortOrder, setSortOrder] = useState("asc");
+  const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
+  const [sortOrder, setSortOrder] = useState("asc"); // Default sorting order
 
-  useEffect(() => {
-    // Fetch premium profiles where premiumStatus is 'approved'
-    fetch(`/premium-profiles?order=${sortOrder}`)
-      .then((res) => res.json())
-      .then((data) => setProfiles(data))
-      .catch((err) => console.error("Error fetching profiles:", err));
-  }, [sortOrder]);
+  // Fetch premium profiles
+  const { data: profiles, isError, isLoading, refetch } = useQuery({
+    queryKey: ["premium", sortOrder],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/premium-profiles", {
+        params: { order: sortOrder },
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
+      });
+      return res.data;
+    },
+  });
 
+  // Handle sort order change
   const handleSortChange = (e) => {
     setSortOrder(e.target.value);
+    refetch(); // Refetch data with new sort order
   };
 
+  // Redirect to details page
   const handleViewProfile = (id) => {
-    navigate(`/profile/${id}`);
+    const token = localStorage.getItem("access-token");
+    if (!token) {
+      navigate("/login");
+    } else {
+      navigate(`/biodata/${id}`);
+    }
   };
+
+  if (isLoading) return <Loading />;
+  if (isError) return <div className="text-red-500">Failed to load profiles.</div>;
 
   return (
-    <div className="premium-section px-4 py-8">
-      <h2 className="text-2xl font-bold text-center">Premium Members</h2>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <h2 className="text-3xl font-bold text-center mb-8">Premium Members</h2>
 
-      {/* Dropdown for sorting */}
-      <div className="flex justify-end mt-4">
-        <label htmlFor="sortOrder" className="mr-2">
-          Sort by Age:
-        </label>
+      <div className="flex justify-end mb-4">
         <select
-          id="sortOrder"
           value={sortOrder}
           onChange={handleSortChange}
-          className="border p-2 rounded-md"
+          className="border border-gray-300 p-2 rounded"
         >
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
+          <option value="asc">Sort by Age: Ascending</option>
+          <option value="desc">Sort by Age: Descending</option>
         </select>
       </div>
 
-      {/* Profiles Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-        {profiles.map((profile) => (
-          <div
-            key={profile._id}
-            className="card border p-4 rounded-md shadow-lg"
-          >
-            <img
-              src={profile.profileImage || "https://via.placeholder.com/150"}
-              alt={`Profile of ${profile.biodataId}`}
-              className="rounded-md w-full h-40 object-cover"
-            />
-            <div className="card-body mt-4">
-              <h3 className="text-lg font-bold">{`Biodata ID: ${profile.biodataId}`}</h3>
-              <p>Biodata Type: {profile.biodataType}</p>
-              <p>Division: {profile.permanentDivision}</p>
-              <p>Age: {profile.age}</p>
-              <p>Occupation: {profile.occupation}</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {profiles?.length > 0 ? (
+          profiles.map((profile) => (
+            <div
+              key={profile._id}
+              className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center"
+            >
+              <img
+                src={profile.profileImage || "https://via.placeholder.com/150"}
+                alt="Profile"
+                className="w-24 h-24 rounded-full object-cover mb-4"
+              />
+              <h4 className="text-lg font-semibold">{profile.name}</h4>
+              <p className="text-gray-600">
+                <strong>Type:</strong> {profile.biodataType}
+              </p>
+              <p className="text-gray-600">
+                <strong>Division:</strong> {profile.permanentDivision}
+              </p>
+              <p className="text-gray-600">
+                <strong>Age:</strong> {profile.age}
+              </p>
+              <p className="text-gray-600">
+                <strong>Occupation:</strong> {profile.occupation}
+              </p>
               <button
-                className="btn bg-blue-500 text-white px-4 py-2 mt-4 rounded-md hover:bg-blue-600"
                 onClick={() => handleViewProfile(profile._id)}
+                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
                 View Profile
               </button>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="text-center text-gray-500">No premium profiles found.</p>
+        )}
       </div>
     </div>
   );

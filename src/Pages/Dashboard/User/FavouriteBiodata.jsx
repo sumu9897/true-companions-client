@@ -1,49 +1,54 @@
 import React, { useEffect, useState } from "react";
-import { FaTrashAlt } from "react-icons/fa"; // Import trash icon
-import { FiLoader } from "react-icons/fi"; // Loading icon
+import { FaTrashAlt } from "react-icons/fa";
+import { FiLoader } from "react-icons/fi";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useFavorite from "../../../hooks/useFavorite";
 
 const FavouriteBiodata = () => {
-  const [favorites, setFavorites] = useState([]);
-  const [biodatas, setBiodatas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const axiosSecure = useAxiosSecure();
+  const [favorite, refetch] = useFavorite();
+  const [loading, setLoading] = useState(true); 
+  const axiosSecure = useAxiosSecure(); 
 
-  useEffect(() => {
-    const fetchFavoritesAndBiodatas = async () => {
-      try {
-        // Fetch the user's favorite biodata IDs
-        const favoritesRes = await axiosSecure.get("/favorites");
-        setFavorites(favoritesRes.data);
-
-        // Fetch all biodatas
-        const biodatasRes = await axiosSecure.get("/biodatas");
-        setBiodatas(biodatasRes.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        toast.error("Error fetching data");
-      } finally {
-        setLoading(false);
+  // Handle delete favorite
+  const handleDeleteFavorite = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosSecure
+          .delete(`/favorites/${id}`)
+          .then((res) => {
+            if (res.data.deletedCount > 0) {
+              refetch();
+              Swal.fire({
+                title: "Deleted!",
+                text: "Your favorite has been deleted.",
+                icon: "success",
+              });
+            }
+          })
+          .catch((error) => {
+            toast.error("Error deleting favorite!");
+            console.error(error);
+          });
       }
-    };
-
-    fetchFavoritesAndBiodatas();
-  }, [axiosSecure]);
-
-  const handleDeleteFavorite = async (biodataId) => {
-    try {
-      await axiosSecure.delete(`/favorites/${biodataId}`);
-      toast.success("Favorite deleted successfully");
-      setFavorites((prevFavorites) =>
-        prevFavorites.filter((favorite) => favorite.biodataId !== biodataId)
-      );
-    } catch (error) {
-      toast.error(
-        `Failed to delete favorite: ${error.response?.data?.message || error.message}`
-      );
-    }
+    });
   };
+
+  // Wait for data loading
+  useEffect(() => {
+    if (favorite.length > 0) {
+      setLoading(false);
+    }
+  }, [favorite]);
 
   if (loading) {
     return (
@@ -54,22 +59,13 @@ const FavouriteBiodata = () => {
     );
   }
 
-  if (!favorites.length || !biodatas.length) {
+  if (favorite.length === 0) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <p className="text-center text-lg text-gray-600">
-          {biodatas.length
-            ? "You have no favorite biodatas."
-            : "No biodatas available."}
-        </p>
+        <p className="text-center text-lg text-gray-600">You have no favorite biodatas.</p>
       </div>
     );
   }
-
-  const mappedFavorites = favorites.map((favorite) => {
-    const biodata = biodatas.find((b) => b._id === favorite.biodataId);
-    return { ...favorite, ...biodata };
-  });
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -78,41 +74,21 @@ const FavouriteBiodata = () => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
-                Biodata ID
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
-                Permanent Address
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
-                Occupation
-              </th>
-              <th className="px-6 py-3 text-center text-sm font-semibold text-gray-600 uppercase">
-                Actions
-              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Name</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Biodata ID</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Occupation</th>
+              <th className="px-6 py-3 text-center text-sm font-semibold text-gray-600 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {mappedFavorites.map((favorite) => (
-              <tr key={favorite.biodataId} className="hover:bg-gray-100">
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  {favorite.name || "N/A"}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-600">
-                  {favorite.biodataId}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-600">
-                  {favorite.permanentDivision || "N/A"}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-600">
-                  {favorite.occupation || "N/A"}
-                </td>
+            {favorite.map((fav) => (
+              <tr key={fav._id}>
+                <td className="px-6 py-4 text-sm text-gray-900">{fav.name}</td>
+                <td className="px-6 py-4 text-sm text-gray-600">{fav.id}</td>
+                <td className="px-6 py-4 text-sm text-gray-600">{fav.occupation || "N/A"}</td>
                 <td className="px-6 py-4 text-center">
                   <button
-                    onClick={() => handleDeleteFavorite(favorite.biodataId)}
+                    onClick={() => handleDeleteFavorite(fav._id)}
                     className="text-red-500 hover:text-red-700 transition-colors duration-200"
                   >
                     <FaTrashAlt className="inline mr-2" />
