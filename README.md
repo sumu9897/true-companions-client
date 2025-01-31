@@ -7,11 +7,7 @@ Welcome to True Companions, an intuitive and user-friendly Matrimony platform de
 ## Live Site
 [Visit True Companions](https://true-companions.web.app/)
 
----
 
-## Admin Credentials
-- **Email:** admin@truecompanions.com
-- **Password:** Admin@123
 
 ---
 
@@ -57,7 +53,7 @@ Welcome to True Companions, an intuitive and user-friendly Matrimony platform de
 1. **Clone the Repository**:
 ```bash
 # Clone the client-side repository
-https://github.com/Programming-Hero-Web-Course4/b10a12-client-side-sumu9897
+https://github.com/sumu9897/true-companions-client
 
 # Navigate to the project directory
 cd b10a12-client-side-sumu9897
