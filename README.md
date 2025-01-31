@@ -56,7 +56,7 @@ Welcome to True Companions, an intuitive and user-friendly Matrimony platform de
 https://github.com/sumu9897/true-companions-client
 
 # Navigate to the project directory
-cd b10a12-client-side-sumu9897
+cd true-companions-client
 ```
 
 2. **Install Dependencies**:
