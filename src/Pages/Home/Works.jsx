@@ -7,7 +7,7 @@ const Works = () => {
       <div className="container mx-auto px-6 lg:px-20">
         {/* Section Title */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-800">How It Works</h2>
+          <h2 className="text-3xl font-bold text-indigo-700">How It Works</h2>
           <p className="mt-4 text-lg text-gray-600">
             Our simple and effective process helps you connect with the right partner. Here’s how it works:
           </p>
