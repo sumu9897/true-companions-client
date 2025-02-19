@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import {
   FaEdit,
@@ -9,59 +10,69 @@ import {
   FaClipboardCheck,
   FaUserShield,
   FaClipboardList,
-} from "react-icons/fa"; 
+  FaBars,
+  FaTimes,
+} from "react-icons/fa";
 import { FcViewDetails } from "react-icons/fc";
-
 import useAuth from "../hooks/useAuth";
 import Navbar from "../Pages/Shared/Navbar";
 import useAdmin from "../hooks/useAdmin";
- // Import your auth hook to get the user
 
 const Dashboard = () => {
-  const [isAdmin] = useAdmin()
-  // const isAdmin = 'admin';
-  const { user } = useAuth(); // Assuming useAuth provides the logged-in user info
-  const userId = user?.id; // Replace 'id' with the actual property for the user ID in your auth system
+  const [isAdmin] = useAdmin();
+  const { user } = useAuth();
+  const userId = user?.id;
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="font-sans">
+    <div className="font-sans min-h-screen flex flex-col bg-gray-100">
       <Navbar />
       <div className="flex mt-16 pt-4">
+        {/* Sidebar Toggle Button */}
+        <button
+          className="lg:hidden fixed top-20 left-4 z-50 bg-primary text-white p-2 rounded-md shadow-md"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          {sidebarOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+        </button>
+
         {/* Sidebar */}
-        <div className="w-64 min-h-screen bg-primary text-white py-5 px-6">
-          <ul>
+        <aside
+          className={`fixed top-16 left-0 bg-primary text-white py-5 px-6 shadow-lg h-screen transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:w-64`}
+        >
+          <ul className="space-y-4">
             {isAdmin ? (
               <>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
-                    to={"/dashboard/admin"}
+                    className="flex gap-3 items-center p-3 rounded-lg hover:bg-blue-600 transition"
+                    to="/dashboard/admin"
                   >
                     <FaUserShield /> Admin Dashboard
                   </NavLink>
                 </li>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
-                    to={"/dashboard/manage"}
+                    className="flex gap-3 items-center p-3 rounded-lg hover:bg-blue-600 transition"
+                    to="/dashboard/manage"
                   >
-                    <FaUsers /> Manage User
+                    <FaUsers /> Manage Users
                   </NavLink>
                 </li>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
-                    to={"/dashboard/approvedPremium"}
+                    className="flex gap-3 items-center p-3 rounded-lg hover:bg-blue-600 transition"
+                    to="/dashboard/approvedPremium"
                   >
                     <FaClipboardCheck /> Approved Premium
                   </NavLink>
                 </li>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
-                    to={"/dashboard/approvedContactRequest"}
+                    className="flex gap-3 items-center p-3 rounded-lg hover:bg-blue-600 transition"
+                    to="/dashboard/approvedContactRequest"
                   >
-                    <FaClipboardList /> Approved Contact Request
+                    <FaClipboardList /> Approved Contact Requests
                   </NavLink>
                 </li>
               </>
@@ -69,40 +80,40 @@ const Dashboard = () => {
               <>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
-                    to={`/dashboard/edit-biodata`}
+                    className="flex gap-3 items-center p-3 rounded-lg hover:bg-blue-600 transition"
+                    to="/dashboard/edit-biodata"
                   >
                     <FaEdit /> Edit Biodata
                   </NavLink>
                 </li>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
-                    to={`/dashboard/view-biodata`}
+                    className="flex gap-3 items-center p-3 rounded-lg hover:bg-blue-600 transition"
+                    to="/dashboard/view-biodata"
                   >
                     <FcViewDetails /> View Biodata
                   </NavLink>
                 </li>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
-                    to={"/dashboard/contact-request"}
+                    className="flex gap-3 items-center p-3 rounded-lg hover:bg-blue-600 transition"
+                    to="/dashboard/contact-request"
                   >
-                    <FaEnvelope /> My Contact Request
+                    <FaEnvelope /> My Contact Requests
                   </NavLink>
                 </li>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
-                    to={"/dashboard/my-favourites"}
+                    className="flex gap-3 items-center p-3 rounded-lg hover:bg-blue-600 transition"
+                    to="/dashboard/my-favourites"
                   >
-                    <FaHeart /> My Favourites Biodata
+                    <FaHeart /> My Favourite Biodata
                   </NavLink>
                 </li>
                 <li>
                   <NavLink
-                    className="flex gap-2 items-center p-2 mb-4 rounded-md hover:bg-blue-600 transition-all"
-                    to={"/dashboard/got-married"}
+                    className="flex gap-3 items-center p-3 rounded-lg hover:bg-blue-600 transition"
+                    to="/dashboard/got-married"
                   >
                     <FaCheckCircle /> Got Married Form
                   </NavLink>
@@ -110,12 +121,12 @@ const Dashboard = () => {
               </>
             )}
           </ul>
-        </div>
+        </aside>
 
         {/* Main Content */}
-        <div className="flex-1 bg-gray-50 p-6">
+        <main className="flex-1 lg:ml-64 p-8 bg-gray-50 min-h-screen">
           <Outlet />
-        </div>
+        </main>
       </div>
     </div>
   );
