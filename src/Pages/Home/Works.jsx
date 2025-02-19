@@ -3,7 +3,7 @@ import { FaUser, FaSearch, FaHandshake, FaHeart } from 'react-icons/fa';
 
 const Works = () => {
   return (
-    <div className="bg-gray-50 py-12">
+    <div className="py-12">
       <div className="container mx-auto px-6 lg:px-20">
         {/* Section Title */}
         <div className="text-center mb-12">
