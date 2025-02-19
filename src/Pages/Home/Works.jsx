@@ -54,7 +54,7 @@ const Works = () => {
 
         {/* Call to Action */}
         <div className="text-center mt-12">
-          <h3 className="text-2xl font-semibold text-gray-800 mb-4">Ready to Get Started?</h3>
+          <h3 className="text-2xl font-semibold text-indigo-700 mb-4">Ready to Get Started?</h3>
           <p className="text-lg text-gray-600 mb-6">
             Join our platform today and begin your journey to find the perfect partner!
           </p>

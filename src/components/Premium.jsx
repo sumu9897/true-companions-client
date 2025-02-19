@@ -44,7 +44,7 @@ const Premium = () => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <h2 className="text-3xl font-bold text-center mb-8">Premium Members</h2>
+      <h2 className="text-3xl font-bold text-indigo-700 text-center mb-8">Premium Members</h2>
 
       <div className="flex justify-end mb-4">
         <select

@@ -32,7 +32,7 @@ const SuccessCounter = () => {
       <div className="container mx-auto px-6 lg:px-20">
         {/* Section Title */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-800">Our Achievements</h2>
+          <h2 className="text-3xl font-bold text-indigo-700">Our Achievements</h2>
           <p className="mt-4 text-lg text-gray-600">
             We’re proud of our growing community and the success we’ve achieved
             together. Here are some of our milestones:
