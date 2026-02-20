@@ -1,73 +1,63 @@
-import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import useAxiosSecure from "../../hooks/useAxiosSecure";
-import Loading from "../../Components/Loading";
+import CountUp from "react-countup";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+
+const StatCard = ({ value, label, color }) => (
+  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center hover:shadow-md transition-shadow">
+    <p className={`text-5xl font-extrabold ${color} mb-2`}>
+      <CountUp end={value} duration={2.5} separator="," />+
+    </p>
+    <p className="text-gray-600 font-medium">{label}</p>
+  </div>
+);
 
 const SuccessCounter = () => {
-  const axiosSecure = useAxiosSecure();
+  const axiosPublic = useAxiosPublic();
 
-  // Fetch statistics
-  const { data: stats = {}, isLoading, isError } = useQuery({
-    queryKey: ["success-stats"],
+  const { data: stats = {}, isLoading } = useQuery({
+    queryKey: ["biodatas-stats"],
     queryFn: async () => {
-      const res = await axiosSecure.get("/success-stats", {
-        headers: {
-          authorization: `Bearer ${localStorage.getItem("access-token")}`,
-        },
-      });
+      const res = await axiosPublic.get("/biodatas/stats");
       return res.data;
     },
   });
 
-  if (isLoading) return <Loading />;
-  if (isError)
+  if (isLoading) {
     return (
-      <div className="text-center text-red-500">
-        Failed to load statistics. Please try again later.
-      </div>
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl h-36 animate-pulse" />
+          ))}
+        </div>
+      </section>
     );
+  }
 
   return (
-    <div className=" py-12">
-      <div className="container mx-auto px-6 lg:px-20">
-        {/* Section Title */}
+    <section className="py-16 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-indigo-700">Our Achievements</h2>
-          <p className="mt-4 text-lg text-gray-600">
-            We’re proud of our growing community and the success we’ve achieved
-            together. Here are some of our milestones:
+          <span className="text-xs font-semibold uppercase tracking-widest text-indigo-600">
+            Our Impact
+          </span>
+          <h2 className="text-3xl font-bold text-gray-900 mt-2">
+            Trusted by Thousands
+          </h2>
+          <p className="text-gray-500 mt-3 max-w-xl mx-auto">
+            Real numbers that reflect the journeys of real people who found their
+            life partners through BandhanBD.
           </p>
         </div>
 
-        {/* Success Counters */}
-        <div className="flex justify-center space-x-8">
-          <div className="bg-white p-8 rounded-lg shadow-lg text-center transform transition duration-300 hover:scale-105 hover:shadow-xl">
-            <h3 className="text-4xl font-bold text-indigo-600">
-              {stats.totalBiodata || 0}+
-            </h3>
-            <p className="text-lg text-gray-700 mt-2">Total Biodata</p>
-          </div>
-          <div className="bg-white p-8 rounded-lg shadow-lg text-center transform transition duration-300 hover:scale-105 hover:shadow-xl">
-            <h3 className="text-4xl font-bold text-blue-600">
-              {stats.maleBiodata || 0}+
-            </h3>
-            <p className="text-lg text-gray-700 mt-2">Male Biodata</p>
-          </div>
-          <div className="bg-white p-8 rounded-lg shadow-lg text-center transform transition duration-300 hover:scale-105 hover:shadow-xl">
-            <h3 className="text-4xl font-bold text-pink-600">
-              {stats.femaleBiodata || 0}+
-            </h3>
-            <p className="text-lg text-gray-700 mt-2">Female Biodata</p>
-          </div>
-          <div className="bg-white p-8 rounded-lg shadow-lg text-center transform transition duration-300 hover:scale-105 hover:shadow-xl">
-            <h3 className="text-4xl font-bold text-green-600">
-              {stats.marriagesCompleted || 0}+
-            </h3>
-            <p className="text-lg text-gray-700 mt-2">Marriages Completed</p>
-          </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCard value={stats.totalBiodata || 0} label="Total Biodata" color="text-indigo-600" />
+          <StatCard value={stats.maleBiodata || 0} label="Male Profiles" color="text-blue-600" />
+          <StatCard value={stats.femaleBiodata || 0} label="Female Profiles" color="text-pink-600" />
+          <StatCard value={stats.marriagesCompleted || 0} label="Marriages Completed" color="text-emerald-600" />
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

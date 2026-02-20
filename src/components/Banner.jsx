@@ -1,56 +1,63 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const Banner = () => {
   return (
-    <div
-      className="relative h-screen flex items-center justify-center bg-cover bg-center"
-      style={{
-        backgroundImage: "url('https://i.ibb.co/G7RsbBQ/bgImage.jpg')",
-      }}
+    <section
+      className="relative min-h-screen flex items-center justify-center bg-cover bg-center"
+      style={{ backgroundImage: "url('https://i.ibb.co/G7RsbBQ/bgImage.jpg')" }}
     >
-      {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-indigo-900/60" />
 
-      {/* Content */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-        className="relative z-10 text-center text-white px-6 sm:px-10 md:px-16 lg:px-20"
+        transition={{ duration: 0.9, ease: "easeOut" }}
+        className="relative z-10 text-center text-white px-4 sm:px-8 max-w-4xl mx-auto"
       >
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold  leading-tight mb-6">
-          <span className="text-red-600">Find Your</span>{" "}
-          <span className="text-pink-500">True Companion</span>
+        <motion.span
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="inline-block bg-indigo-600/80 text-indigo-100 text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-6"
+        >
+          Bangladesh's Most Trusted Matrimony Platform
+        </motion.span>
+
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6">
+          Find Your{" "}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-rose-500">
+            Life Partner
+          </span>
         </h1>
-        <p className="mt-4 text-lg sm:text-xl md:text-2xl lg:text-3xl leading-relaxed max-w-3xl mx-auto text-gray-200">
-          Start your journey towards a meaningful connection today.
+
+        <p className="text-lg sm:text-xl md:text-2xl text-gray-200 max-w-2xl mx-auto mb-10 leading-relaxed">
+          Connect with thousands of verified biodata profiles across all divisions
+          of Bangladesh. Your journey to a meaningful life begins here.
         </p>
 
-        {/* Buttons */}
-        <div className="mt-10 flex flex-col sm:flex-row justify-center gap-6">
-          <Link to="/register">
+        <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <Link to="/signup">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-3 bg-gradient-to-r from-pink-600 to-red-500 text-white font-medium rounded-lg shadow-md hover:shadow-xl transition duration-300"
+              className="px-8 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-shadow"
             >
-              Get Started
+              Get Started Free
             </motion.button>
           </Link>
-          <Link to="/about">
+          <Link to="/biodatapage">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-3 border border-white text-white font-medium rounded-lg hover:bg-white hover:text-gray-900 transition duration-300"
+              className="px-8 py-3.5 border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-gray-900 transition-colors"
             >
-              Learn More
+              Browse Biodatas
             </motion.button>
           </Link>
         </div>
       </motion.div>
-    </div>
+    </section>
   );
 };
 

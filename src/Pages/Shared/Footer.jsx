@@ -1,134 +1,89 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
-import logo from '../../assets/logo.webp'; 
-
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-gray-200 py-10">
-      <div className="container mx-auto px-4 md:px-8 lg:px-16">
-        {/* Top Section */}
-        <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start space-y-8 lg:space-y-0">
-          {/* Logo and About */}
-          <div className="flex flex-col items-center lg:items-start space-y-4">
-            <Link to="/" className="flex items-center space-x-2">
-              <img src={logo} alt="Website Logo" className="h-10 w-10" />
-              <span className="text-xl font-bold text-white">True Companions</span>
-            </Link>
-            <p className="text-center lg:text-left text-gray-400">
-              Connecting hearts and minds, one biodata at a time. Find your true match here.
+    <footer className="bg-gray-900 text-gray-300">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Brand */}
+          <div>
+            <h3 className="text-white text-xl font-bold mb-3">BandhanBD</h3>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Bangladesh's trusted matrimonial platform — connecting families
+              and building lifelong bonds since 2024.
             </p>
+            <div className="flex gap-3 mt-4">
+              {[FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn].map((Icon, i) => (
+                <a
+                  key={i}
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-indigo-600 transition-colors"
+                >
+                  <Icon size={14} />
+                </a>
+              ))}
+            </div>
           </div>
 
-          {/* Navigation Links */}
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-3">
-            <div>
-              <h3 className="text-lg font-bold text-white mb-4">Quick Links</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link to="/" className="hover:text-indigo-400 transition">
-                    Home
+          {/* Quick Links */}
+          <div>
+            <h4 className="text-white font-semibold mb-4">Quick Links</h4>
+            <ul className="space-y-2 text-sm">
+              {[
+                { to: "/", label: "Home" },
+                { to: "/biodatapage", label: "Browse Biodatas" },
+                { to: "/about", label: "About Us" },
+                { to: "/contact", label: "Contact Us" },
+              ].map(({ to, label }) => (
+                <li key={to}>
+                  <Link to={to} className="hover:text-indigo-400 transition-colors">
+                    {label}
                   </Link>
                 </li>
-                <li>
-                  <Link to="/biodatas" className="hover:text-indigo-400 transition">
-                    Biodatas
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/about" className="hover:text-indigo-400 transition">
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/contact" className="hover:text-indigo-400 transition">
-                    Contact Us
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-white mb-4">Support</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link to="/faq" className="hover:text-indigo-400 transition">
-                    FAQs
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/terms" className="hover:text-indigo-400 transition">
-                    Terms of Service
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/privacy" className="hover:text-indigo-400 transition">
-                    Privacy Policy
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-white mb-4">Subscribe</h3>
-              <form className="space-y-2">
-                <input
-                  type="email"
-                  placeholder="Your Email"
-                  className="w-full px-4 py-2 rounded-md bg-gray-800 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <button
-                  type="submit"
-                  className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-md transition"
-                >
-                  Subscribe
-                </button>
-              </form>
+              ))}
+            </ul>
+          </div>
+
+          {/* Support */}
+          <div>
+            <h4 className="text-white font-semibold mb-4">Support</h4>
+            <ul className="space-y-2 text-sm">
+              <li><Link to="/contact" className="hover:text-indigo-400 transition-colors">Help Centre</Link></li>
+              <li><span className="hover:text-indigo-400 cursor-pointer transition-colors">Terms of Service</span></li>
+              <li><span className="hover:text-indigo-400 cursor-pointer transition-colors">Privacy Policy</span></li>
+              <li><span className="hover:text-indigo-400 cursor-pointer transition-colors">Cookie Policy</span></li>
+            </ul>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <h4 className="text-white font-semibold mb-4">Stay Updated</h4>
+            <p className="text-sm text-gray-400 mb-3">
+              Get the latest success stories and platform updates.
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="email"
+                placeholder="Your email"
+                className="flex-1 px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-indigo-500 text-gray-200 placeholder-gray-500"
+              />
+              <button className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors">
+                Subscribe
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="my-8 border-t border-gray-700"></div>
-
-        {/* Bottom Section */}
-        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <p className="text-gray-400 text-sm">
-            © {new Date().getFullYear()} True Companions. All rights reserved.
+        <div className="mt-10 pt-6 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-gray-500 text-sm">
+            © {new Date().getFullYear()} BandhanBD. All rights reserved.
           </p>
-          <div className="flex space-x-4">
-            <a
-              href="https://facebook.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-400 hover:text-indigo-500 transition"
-            >
-              <FaFacebookF size={20} />
-            </a>
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-400 hover:text-indigo-500 transition"
-            >
-              <FaTwitter size={20} />
-            </a>
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-400 hover:text-indigo-500 transition"
-            >
-              <FaInstagram size={20} />
-            </a>
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-400 hover:text-indigo-500 transition"
-            >
-              <FaLinkedinIn size={20} />
-            </a>
-          </div>
+          <p className="text-gray-500 text-sm">
+            Made with ❤️ for Bangladesh
+          </p>
         </div>
       </div>
     </footer>

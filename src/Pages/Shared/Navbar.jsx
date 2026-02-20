@@ -1,188 +1,137 @@
-import React, { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import logo from "../../assets/logo.webp";
+import { useContext, useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import useAdmin from "../../hooks/useAdmin";
+import Swal from "sweetalert2";
+import { FaBars, FaTimes } from "react-icons/fa";
+
+const linkClass = ({ isActive }) =>
+  `text-sm font-medium transition-colors ${
+    isActive ? "text-indigo-600" : "text-gray-700 hover:text-indigo-600"
+  }`;
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const navigate = useNavigate();
   const [isAdmin] = useAdmin();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
-  // Function to toggle the mobile menu
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen((prev) => !prev);
-  };
-
-  // Handle logout and display toast message
   const handleLogOut = () => {
     logOut()
       .then(() => {
-        // Show success toast
-        toast.success("Logged out successfully!", {
-          position: "top-right",
-          autoClose: 1500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
+        Swal.fire({
+          icon: "success",
+          title: "Logged out",
+          timer: 1200,
+          showConfirmButton: false,
         });
         navigate("/");
       })
-      .catch((error) => {
-        console.error("Logout error:", error.message);
-        // Show error toast
-        toast.error(`Error: ${error.message}`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-      });
+      .catch(() => {});
   };
 
-  const navOptions = (
-    <>
-      <li>
-        <Link
-          to="/"
-          className="text-gray-700 hover:text-indigo-500 font-medium transition"
-        >
-          Home
-        </Link>
-      </li>
-      <li>
-        <Link
-          to="/biodatapage"
-          className="text-gray-700 hover:text-indigo-500 font-medium transition"
-        >
-          Biodatas
-        </Link>
-      </li>
-      <li>
-        <Link
-          to="/about"
-          className="text-gray-700 hover:text-indigo-500 font-medium transition"
-        >
-          About Us
-        </Link>
-      </li>
-      <li>
-        <Link
-          to="/contact"
-          className="text-gray-700 hover:text-indigo-500 font-medium transition"
-        >
-          Contact Us
-        </Link>
-      </li>
+  const dashboardPath = isAdmin ? "/dashboard/admin" : "/dashboard/edit-biodata";
 
-      {user ? (
-        <>
-          {/* Show logged-in user's name */}
-          {/* <span>{user?.displayName}</span> */}
-          {
-            user && !isAdmin && <li>
-            <Link
-              to="/dashboard/edit-biodata"
-              className="text-gray-700 hover:text-indigo-500 font-medium transition"
-            >
-              Dashboard
-            </Link>
-          </li>
-          }
-          {
-            user && isAdmin && <li>
-            <Link
-              to="/dashboard/admin"
-              className="text-gray-700 hover:text-indigo-500 font-medium transition"
-            >
-              Dashboard
-            </Link>
-          </li>
-          }
-          
-          
-          <button
-            onClick={handleLogOut}
-            className="text-gray-700 hover:text-red-500 font-medium transition"
-          >
-            Log Out
-          </button>
-        </>
-      ) : (
-        <>
-          <li>
-            <Link
-              to="/login"
-              className="text-gray-700 hover:text-indigo-500 font-medium transition"
-            >
-              Login
-            </Link>
-          </li>
-        </>
+  const navLinks = (
+    <>
+      <li><NavLink to="/" className={linkClass} onClick={() => setMenuOpen(false)}>Home</NavLink></li>
+      <li><NavLink to="/biodatapage" className={linkClass} onClick={() => setMenuOpen(false)}>Biodatas</NavLink></li>
+      <li><NavLink to="/about" className={linkClass} onClick={() => setMenuOpen(false)}>About Us</NavLink></li>
+      <li><NavLink to="/contact" className={linkClass} onClick={() => setMenuOpen(false)}>Contact Us</NavLink></li>
+      {user && (
+        <li>
+          <NavLink to={dashboardPath} className={linkClass} onClick={() => setMenuOpen(false)}>
+            Dashboard
+          </NavLink>
+        </li>
       )}
     </>
   );
 
   return (
-    <nav className="w-full fixed top-0 z-10 bg-transparent bg-opacity-65 backdrop-blur-md shadow-sm">
-      <div className="container mx-auto px-4 md:px-8 lg:px-16 flex items-center justify-between h-16">
-        {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2">
-          <img src={logo} alt="Website Logo" className="h-8 w-8" />
-          <span className="text-lg font-bold text-gray-700">
-            True Companions
-          </span>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
+        {/* Brand */}
+        <Link to="/" className="flex items-center gap-2">
+          <span className="text-lg font-bold text-indigo-700 tracking-tight">BandhanBD</span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <ul className="hidden md:flex items-center space-x-8">{navOptions}</ul>
+        {/* Desktop Nav */}
+        <ul className="hidden md:flex items-center gap-8">{navLinks}</ul>
 
-        {/* Mobile Menu Button */}
+        {/* Desktop Auth */}
+        <div className="hidden md:flex items-center gap-3">
+          {user ? (
+            <div className="flex items-center gap-3">
+              <img
+                src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName}&background=4f46e5&color=fff`}
+                alt={user.displayName}
+                className="w-8 h-8 rounded-full object-cover ring-2 ring-indigo-200"
+              />
+              <span className="text-sm font-medium text-gray-700 hidden lg:block">
+                {user.displayName}
+              </span>
+              <button
+                onClick={handleLogOut}
+                className="text-sm font-medium text-gray-600 hover:text-red-500 transition-colors"
+              >
+                Log Out
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="bg-indigo-600 text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              Login
+            </Link>
+          )}
+        </div>
+
+        {/* Mobile Toggle */}
         <button
-          className="md:hidden text-gray-700 hover:text-indigo-500 focus:outline-none"
-          onClick={toggleMobileMenu}
-          aria-label="Toggle Mobile Menu"
+          className="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label="Toggle menu"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4 6h16M4 12h16m-7 6h7"
-            />
-          </svg>
+          {menuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
         </button>
       </div>
 
       {/* Mobile Menu */}
-      <div
-        className={`${
-          isMobileMenuOpen ? "block" : "hidden"
-        } md:hidden bg-white border-t border-gray-200`}
-      >
-        <ul className="flex flex-col items-center space-y-4 py-4">
-          {navOptions}
-        </ul>
-      </div>
-
-      {/* Toast Container */}
-      <ToastContainer />
+      {menuOpen && (
+        <div className="md:hidden bg-white border-t border-gray-200 px-4 py-4 shadow-md">
+          <ul className="flex flex-col gap-4">{navLinks}</ul>
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            {user ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <img
+                    src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName}&background=4f46e5&color=fff`}
+                    alt={user.displayName}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                  <span className="text-sm font-medium text-gray-700">{user.displayName}</span>
+                </div>
+                <button
+                  onClick={handleLogOut}
+                  className="text-sm text-red-500 font-medium"
+                >
+                  Log Out
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="block w-full text-center bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-indigo-700"
+              >
+                Login
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

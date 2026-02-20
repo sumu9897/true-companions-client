@@ -1,38 +1,29 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import useAxiosSecure from "../hooks/useAxiosSecure";
 import { useNavigate } from "react-router-dom";
-import Loading from "../Components/Loading";
+import useAxiosPublic from "../hooks/useAxiosPublic";
+import useAuth from "../hooks/useAuth";
+import Loading from "./Loading";
+import { FaUser, FaMapMarkerAlt, FaBriefcase, FaCrown } from "react-icons/fa";
 
 const Premium = () => {
-  const axiosSecure = useAxiosSecure();
+  const axiosPublic = useAxiosPublic();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [sortOrder, setSortOrder] = useState("asc"); // Default sorting order
+  const [sortOrder, setSortOrder] = useState("asc");
 
-  // Fetch premium profiles
-  const { data: profiles, isError, isLoading, refetch } = useQuery({
-    queryKey: ["premium", sortOrder],
+  const { data: profiles = [], isLoading, isError } = useQuery({
+    queryKey: ["premium-profiles", sortOrder],
     queryFn: async () => {
-      const res = await axiosSecure.get("/premium-profiles", {
+      const res = await axiosPublic.get("/biodatas/premium", {
         params: { order: sortOrder },
-        headers: {
-          authorization: `Bearer ${localStorage.getItem("access-token")}`,
-        },
       });
       return res.data;
     },
   });
 
-  // Handle sort order change
-  const handleSortChange = (e) => {
-    setSortOrder(e.target.value);
-    refetch(); // Refetch data with new sort order
-  };
-
-  // Redirect to details page
   const handleViewProfile = (id) => {
-    const token = localStorage.getItem("access-token");
-    if (!token) {
+    if (!user) {
       navigate("/login");
     } else {
       navigate(`/biodata/${id}`);
@@ -40,61 +31,94 @@ const Premium = () => {
   };
 
   if (isLoading) return <Loading />;
-  if (isError) return <div className="text-red-500">Failed to load profiles.</div>;
+  if (isError)
+    return (
+      <div className="text-center py-12 text-red-500">
+        Failed to load premium profiles.
+      </div>
+    );
 
   return (
-    <div className="p-6 min-h-screen">
-      <h2 className="text-3xl font-bold text-indigo-700 text-center mb-8">Premium Members</h2>
-
-      <div className="flex justify-end mb-4">
-        <select
-          value={sortOrder}
-          onChange={handleSortChange}
-          className="border border-gray-300 p-2 rounded"
-        >
-          <option value="asc">Sort by Age: Ascending</option>
-          <option value="desc">Sort by Age: Descending</option>
-        </select>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {profiles?.length > 0 ? (
-          profiles.map((profile) => (
-            <div
-              key={profile._id}
-              className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center"
-            >
-              <img
-                src={profile.profileImage || "https://via.placeholder.com/150"}
-                alt="Profile"
-                className="w-24 h-24 rounded-full object-cover mb-4"
-              />
-              <h4 className="text-lg font-semibold">{profile.name}</h4>
-              <p className="text-gray-600">
-                <strong>Type:</strong> {profile.biodataType}
-              </p>
-              <p className="text-gray-600">
-                <strong>Division:</strong> {profile.permanentDivision}
-              </p>
-              <p className="text-gray-600">
-                <strong>Age:</strong> {profile.age}
-              </p>
-              <p className="text-gray-600">
-                <strong>Occupation:</strong> {profile.occupation}
-              </p>
-              <button
-                onClick={() => handleViewProfile(profile._id)}
-                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                View Profile
-              </button>
+    <section className="py-16 bg-gradient-to-b from-white to-indigo-50">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <FaCrown className="text-yellow-500" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-indigo-600">
+                Premium Profiles
+              </span>
             </div>
-          ))
-        ) : (
-          <p className="text-center text-gray-500">No premium profiles found.</p>
-        )}
+            <h2 className="text-3xl font-bold text-gray-900">Featured Members</h2>
+          </div>
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
+          >
+            <option value="asc">Age: Low to High</option>
+            <option value="desc">Age: High to Low</option>
+          </select>
+        </div>
+
+        {/* Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {profiles.length > 0 ? (
+            profiles.map((profile) => (
+              <div
+                key={profile._id}
+                className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
+              >
+                {/* Profile Image */}
+                <div className="relative h-48 bg-gradient-to-br from-indigo-100 to-purple-100">
+                  <img
+                    src={profile.profileImage || `https://ui-avatars.com/api/?name=${profile.name}&size=200&background=e0e7ff&color=4f46e5`}
+                    alt={profile.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <span className="absolute top-3 right-3 bg-yellow-400 text-yellow-900 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                    <FaCrown size={10} /> Premium
+                  </span>
+                  <span className="absolute bottom-3 left-3 bg-white/90 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full">
+                    ID #{profile.biodataId}
+                  </span>
+                </div>
+
+                {/* Info */}
+                <div className="p-5">
+                  <h3 className="font-bold text-gray-900 text-lg mb-3">{profile.name}</h3>
+                  <div className="space-y-1.5 text-sm text-gray-600 mb-4">
+                    <div className="flex items-center gap-2">
+                      <FaUser size={12} className="text-indigo-400 shrink-0" />
+                      <span>{profile.biodataType} · Age {profile.age}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FaMapMarkerAlt size={12} className="text-indigo-400 shrink-0" />
+                      <span>{profile.permanentDivision}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FaBriefcase size={12} className="text-indigo-400 shrink-0" />
+                      <span>{profile.occupation}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleViewProfile(profile._id)}
+                    className="w-full py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+                  >
+                    View Profile
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="col-span-full text-center text-gray-500 py-12">
+              No premium profiles available yet.
+            </p>
+          )}
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 
