@@ -30,6 +30,7 @@ const AuthProvider = ({ children }) => {
     setLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
+
   const googleSignIn = () => {
     setLoading(true);
     return signInWithPopup(auth, googleProvider);
@@ -37,6 +38,7 @@ const AuthProvider = ({ children }) => {
 
   const logOut = () => {
     setLoading(true);
+    localStorage.removeItem("access-token");
     return signOut(auth);
   };
 
@@ -47,30 +49,31 @@ const AuthProvider = ({ children }) => {
     });
   };
 
+  // On auth state change: issue JWT from server so it persists on refresh
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
-      // console.log('current user', currentUser);
-      if (currentUser) {
-        const userInfo = { email: currentUser.email };
-        axiosPublic.post("/jwt", userInfo)
-        .then(res =>{
-          if (res.data.token) {
-            localStorage.setItem('access-token', res.data.token);
-            // console.log(res.data.token)
-            setLoading(false);
-          }
 
-        })
+      if (currentUser) {
+        try {
+          const res = await axiosPublic.post("/jwt", {
+            email: currentUser.email,
+          });
+          if (res.data.token) {
+            localStorage.setItem("access-token", res.data.token);
+          }
+        } catch {
+          // JWT fetch failed — remove stale token
+          localStorage.removeItem("access-token");
+        }
       } else {
-        localStorage.removeItem('access-token');
-        setLoading(false);
+        localStorage.removeItem("access-token");
       }
-      
+
+      setLoading(false);
     });
-    return () => {
-      return unsubscribe();
-    };
+
+    return () => unsubscribe();
   }, [axiosPublic]);
 
   const authInfo = {
@@ -82,6 +85,7 @@ const AuthProvider = ({ children }) => {
     updateUserProfile,
     logOut,
   };
+
   return (
     <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
   );
