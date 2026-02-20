@@ -1,176 +1,309 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import useAxiosSecure from "../../hooks/useAxiosSecure";
-import Loading from "../../Components/Loading";
+import { Helmet } from "react-helmet-async";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+import useAuth from "../../hooks/useAuth";
+import Loading from "../../components/Loading";
+import { FaUser, FaMapMarkerAlt, FaBriefcase, FaFilter, FaSearch } from "react-icons/fa";
+
+const DIVISIONS = ["Dhaka", "Chattagram", "Rangpur", "Barisal", "Khulna", "Mymensingh", "Sylhet"];
+const ITEMS_PER_PAGE = 20;
 
 const BiodatasPage = () => {
-  const axiosSecure = useAxiosSecure();
+  const axiosPublic = useAxiosPublic();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-  // State for filters and pagination
-  const [filters, setFilters] = useState({
-    ageRange: [0, 100],
-    type: "",
-    division: "",
-  });
+  const [ageMin, setAgeMin] = useState(18);
+  const [ageMax, setAgeMax] = useState(60);
+  const [biodataType, setBiodataType] = useState("");
+  const [division, setDivision] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20; 
+  const [showFilter, setShowFilter] = useState(false);
 
-  const { data, isError, isLoading, refetch } = useQuery({
-    queryKey: ["biodatas", filters, currentPage],
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["biodatas", ageMin, ageMax, biodataType, division, currentPage],
     queryFn: async () => {
-      const res = await axiosSecure.get("/biodatas", {
-        headers: {
-          authorization: `Bearer ${localStorage.getItem("access-token")}`,
-        },
-        params: {
-          ageMin: filters.ageRange[0] || 0,
-          ageMax: filters.ageRange[1] || 100,
-          biodataType: filters.type || undefined,
-          division: filters.division || undefined,
-          page: currentPage,
-          limit: itemsPerPage,
-        },
-      });
-      return res.data; 
+      const params = {
+        ageMin,
+        ageMax,
+        page: currentPage,
+        limit: ITEMS_PER_PAGE,
+      };
+      if (biodataType) params.biodataType = biodataType;
+      if (division) params.division = division;
+      const res = await axiosPublic.get("/biodatas", { params });
+      return res.data;
     },
   });
 
   const biodatas = data?.biodatas || [];
   const totalItems = data?.total || 0;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({
-      ...prev,
-      [name]: name === "ageRange" ? value.split(",").map(Number) : value,
-    }));
-    setCurrentPage(1); 
-    refetch();
+  const handleApplyFilters = () => {
+    setCurrentPage(1);
+    setShowFilter(false);
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    refetch();
+  const handleReset = () => {
+    setAgeMin(18);
+    setAgeMax(60);
+    setBiodataType("");
+    setDivision("");
+    setCurrentPage(1);
   };
 
   const handleViewProfile = (id) => {
-    if (localStorage.getItem("access-token")) {
-      navigate(`/biodata/${id}`);
-    } else {
+    if (!user) {
       navigate("/login");
+    } else {
+      navigate(`/biodata/${id}`);
     }
   };
 
-  return (
-    <div className="biodatas-page flex flex-col lg:flex-row gap-4 p-4">
-      {/* Filters Section */}
-      <div className="filters w-full lg:w-1/4 bg-gray-100 p-4 rounded-md shadow-md">
-        <h3 className="text-lg font-semibold mb-4">Filters</h3>
+  const FilterPanel = () => (
+    <div className="space-y-6">
+      <h3 className="font-bold text-gray-800 flex items-center gap-2">
+        <FaFilter className="text-indigo-500" /> Filter Options
+      </h3>
 
-        <label className="block mb-2">Age Range:</label>
-        <input
-          type="text"
-          name="ageRange"
-          placeholder="e.g., 20,40"
-          className="w-full mb-4 p-2 border rounded"
-          onChange={handleFilterChange}
-        />
+      {/* Age Range */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          Age Range: {ageMin} – {ageMax}
+        </label>
+        <div className="space-y-2">
+          <div>
+            <span className="text-xs text-gray-500">Min Age</span>
+            <input
+              type="range"
+              min={18}
+              max={ageMax}
+              value={ageMin}
+              onChange={(e) => setAgeMin(Number(e.target.value))}
+              className="w-full accent-indigo-600"
+            />
+          </div>
+          <div>
+            <span className="text-xs text-gray-500">Max Age</span>
+            <input
+              type="range"
+              min={ageMin}
+              max={80}
+              value={ageMax}
+              onChange={(e) => setAgeMax(Number(e.target.value))}
+              className="w-full accent-indigo-600"
+            />
+          </div>
+        </div>
+      </div>
 
-        <label className="block mb-2">Biodata Type:</label>
+      {/* Biodata Type */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Biodata Type</label>
         <select
-          name="type"
-          className="w-full mb-4 p-2 border rounded"
-          onChange={handleFilterChange}
+          value={biodataType}
+          onChange={(e) => setBiodataType(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
         >
-          <option value="">All</option>
+          <option value="">All Types</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </select>
+      </div>
 
-        <label className="block mb-2">Division:</label>
+      {/* Division */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Division</label>
         <select
-          name="division"
-          className="w-full p-2 border rounded"
-          onChange={handleFilterChange}
+          value={division}
+          onChange={(e) => setDivision(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
         >
-          <option value="">All</option>
-          <option value="Dhaka">Dhaka</option>
-          <option value="Chattagra">Chattagra</option>
-          <option value="Rangpur">Rangpur</option>
-          <option value="Barisal">Barisal</option>
-          <option value="Khulna">Khulna</option>
-          <option value="Mymensingh">Mymensingh</option>
-          <option value="Sylhet">Sylhet</option>
+          <option value="">All Divisions</option>
+          {DIVISIONS.map((d) => (
+            <option key={d} value={d}>{d}</option>
+          ))}
         </select>
       </div>
 
-      {/* Biodatas List Section */}
-      <div className="biodatas w-full lg:w-3/4">
-        <h3 className="text-lg font-semibold mb-4">All Biodatas</h3>
-
-        {isLoading ? (
-          <p className="text-center"><Loading></Loading></p>
-        ) : isError ? (
-          <p className="text-center text-red-500">Failed to load biodatas.</p>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {biodatas.length > 0 ? (
-                biodatas.map((biodata) => (
-                  <div
-                    key={biodata._id}
-                    className="biodata-card border rounded-lg shadow-md p-4 flex flex-col items-center"
-                  >
-                    <img
-                      src={biodata.profileImage || "https://via.placeholder.com/150"}
-                      alt="Profile"
-                      className="w-24 h-24 rounded-full object-cover mb-4"
-                    />
-                    <p className="text-sm font-semibold">
-                      Biodata ID: {biodata.biodataId}
-                    </p>
-                    <p className="text-sm">Type: {biodata.biodataType}</p>
-                    <p className="text-sm">Division: {biodata.permanentDivision}</p>
-                    <p className="text-sm">Age: {biodata.age}</p>
-                    <p className="text-sm">Occupation: {biodata.occupation}</p>
-                    <button
-                      onClick={() => handleViewProfile(biodata._id)}
-                      className="mt-4 bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
-                    >
-                      View Profile
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <p className="col-span-full text-center text-gray-500">
-                  No biodatas found.
-                </p>
-              )}
-            </div>
-
-            {/* Pagination Controls */}
-            <div className="pagination mt-6 flex justify-center gap-2">
-              {Array.from({ length: totalPages }, (_, index) => (
-                <button
-                  key={index}
-                  onClick={() => handlePageChange(index + 1)}
-                  className={`px-4 py-2 rounded shadow ${
-                    currentPage === index + 1
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
+      <div className="flex gap-3">
+        <button
+          onClick={handleApplyFilters}
+          className="flex-1 bg-indigo-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors"
+        >
+          Apply
+        </button>
+        <button
+          onClick={handleReset}
+          className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors"
+        >
+          Reset
+        </button>
       </div>
     </div>
+  );
+
+  return (
+    <>
+      <Helmet>
+        <title>Browse Biodatas — BandhanBD</title>
+      </Helmet>
+
+      <div className="min-h-screen bg-gray-50">
+        {/* Page Header */}
+        <div className="bg-indigo-700 text-white py-10">
+          <div className="max-w-7xl mx-auto px-4 md:px-8">
+            <h1 className="text-3xl font-bold mb-2">Browse Biodatas</h1>
+            <p className="text-indigo-200">
+              {totalItems > 0 ? `Showing ${totalItems} verified profiles` : "Find your perfect match"}
+            </p>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-6">
+          {/* Mobile filter toggle */}
+          <button
+            onClick={() => setShowFilter(!showFilter)}
+            className="lg:hidden flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-lg shadow-sm text-sm font-medium"
+          >
+            <FaFilter size={14} />
+            {showFilter ? "Hide Filters" : "Show Filters"}
+          </button>
+
+          {/* Filter Sidebar */}
+          <aside className={`lg:w-64 shrink-0 ${showFilter ? "block" : "hidden"} lg:block`}>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
+              <FilterPanel />
+            </div>
+          </aside>
+
+          {/* Biodata Grid */}
+          <div className="flex-1">
+            {isLoading ? (
+              <Loading />
+            ) : isError ? (
+              <div className="text-center py-20 text-red-500">Failed to load biodatas. Please try again.</div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                  {biodatas.length > 0 ? (
+                    biodatas.map((biodata) => (
+                      <div
+                        key={biodata._id}
+                        className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+                      >
+                        <div className="relative h-44 bg-gradient-to-br from-indigo-50 to-purple-50">
+                          <img
+                            src={biodata.profileImage || `https://ui-avatars.com/api/?name=${biodata.name}&size=200&background=e0e7ff&color=4f46e5`}
+                            alt={biodata.name}
+                            className="w-full h-full object-cover"
+                          />
+                          <span className="absolute top-3 left-3 bg-white/90 text-xs font-bold text-gray-700 px-2.5 py-1 rounded-full">
+                            ID #{biodata.biodataId}
+                          </span>
+                          <span className={`absolute top-3 right-3 text-xs font-semibold px-2.5 py-1 rounded-full ${
+                            biodata.biodataType === "Male"
+                              ? "bg-blue-100 text-blue-700"
+                              : "bg-pink-100 text-pink-700"
+                          }`}>
+                            {biodata.biodataType}
+                          </span>
+                        </div>
+                        <div className="p-4">
+                          <h3 className="font-bold text-gray-900 mb-2">{biodata.name}</h3>
+                          <div className="space-y-1 text-sm text-gray-500 mb-4">
+                            <div className="flex items-center gap-2">
+                              <FaUser size={11} className="text-indigo-400" />
+                              <span>Age {biodata.age}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <FaMapMarkerAlt size={11} className="text-indigo-400" />
+                              <span>{biodata.permanentDivision}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <FaBriefcase size={11} className="text-indigo-400" />
+                              <span>{biodata.occupation}</span>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handleViewProfile(biodata._id)}
+                            className="w-full py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+                          >
+                            View Profile
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="col-span-full py-20 text-center">
+                      <FaSearch className="mx-auto text-gray-300 mb-3" size={40} />
+                      <p className="text-gray-500 font-medium">No biodatas match your filters.</p>
+                      <button onClick={handleReset} className="mt-4 text-indigo-600 text-sm underline">
+                        Clear filters
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p className="text-sm text-gray-500">
+                      Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}–
+                      {Math.min(currentPage * ITEMS_PER_PAGE, totalItems)} of {totalItems}
+                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        ‹
+                      </button>
+                      {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                        const page = i + 1;
+                        return (
+                          <button
+                            key={page}
+                            onClick={() => setCurrentPage(page)}
+                            className={`px-3.5 py-1.5 rounded-lg text-sm font-medium ${
+                              currentPage === page
+                                ? "bg-indigo-600 text-white shadow-sm"
+                                : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        );
+                      })}
+                      {totalPages > 7 && <span className="px-2 text-gray-400">...</span>}
+                      {totalPages > 7 && (
+                        <button
+                          onClick={() => setCurrentPage(totalPages)}
+                          className={`px-3.5 py-1.5 rounded-lg text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-50`}
+                        >
+                          {totalPages}
+                        </button>
+                      )}
+                      <button
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                        className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        ›
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 
