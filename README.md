@@ -315,7 +315,6 @@ Make sure `firebase.json` is configured for SPA routing:
 
 | Role | Email | Password |
 |---|---|---|
-| Admin | `admin@bandhanbd.com` | `Admin@12345` |
 | User | `user@bandhanbd.com` | `User@12345` |
 | Premium User | `premium@bandhanbd.com` | `Premium@12345` |
 
