@@ -3,35 +3,189 @@ import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/f
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Brand */}
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+
+        .ft { font-family: 'DM Sans', sans-serif; }
+        .ft-root {
+          background: #0e0905;
+          color: #b8a490;
+          padding: 4.5rem 0 0;
+          position: relative;
+          overflow: hidden;
+        }
+
+        /* Geometric background decoration */
+        .ft-root::before {
+          content: '';
+          position: absolute;
+          top: -80px; right: -80px;
+          width: 360px; height: 360px;
+          border-radius: 50%;
+          border: 1px solid rgba(212, 131, 58, 0.08);
+          pointer-events: none;
+        }
+        .ft-root::after {
+          content: '';
+          position: absolute;
+          top: -40px; right: -40px;
+          width: 220px; height: 220px;
+          border-radius: 50%;
+          border: 1px solid rgba(212, 131, 58, 0.13);
+          pointer-events: none;
+        }
+
+        .ft-inner {
+          max-width: 1280px; margin: 0 auto;
+          padding: 0 2.5rem 4rem;
+          display: grid;
+          grid-template-columns: 1.8fr 1fr 1fr 1.4fr;
+          gap: 3rem;
+        }
+
+        .ft-brand-name {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 2rem; font-weight: 700;
+          color: #fffcf6; letter-spacing: -0.02em;
+          display: flex; align-items: center; gap: 8px;
+          margin-bottom: 1rem; text-decoration: none;
+        }
+
+        .ft-gem {
+          width: 9px; height: 9px;
+          background: linear-gradient(135deg, #d4833a, #e8a05a);
+          border-radius: 2px; transform: rotate(45deg);
+          flex-shrink: 0;
+        }
+
+        .ft-tagline {
+          font-size: 0.84rem; line-height: 1.75;
+          color: #7a6a58; max-width: 240px;
+        }
+
+        .ft-social {
+          display: flex; gap: 0.6rem; margin-top: 1.5rem;
+        }
+
+        .ft-soc-btn {
+          width: 36px; height: 36px;
+          border-radius: 8px;
+          border: 1px solid rgba(196, 168, 128, 0.15);
+          display: flex; align-items: center; justify-content: center;
+          color: #7a6a58; cursor: pointer; text-decoration: none;
+          transition: all 0.22s; background: rgba(255,255,255,0.03);
+        }
+
+        .ft-soc-btn:hover {
+          background: #d4833a; border-color: #d4833a;
+          color: #fff; transform: translateY(-2px);
+        }
+
+        .ft-col-title {
+          font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em;
+          text-transform: uppercase; color: #fffcf6;
+          margin-bottom: 1.5rem;
+        }
+
+        .ft-col-links { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+
+        .ft-col-link {
+          font-size: 0.84rem; color: #7a6a58;
+          text-decoration: none; transition: color 0.2s;
+          cursor: pointer;
+        }
+
+        .ft-col-link:hover { color: #d4833a; }
+
+        /* Newsletter */
+        .ft-nl-desc { font-size: 0.83rem; color: #6a5a48; line-height: 1.65; margin-bottom: 1rem; }
+
+        .ft-nl-form { display: flex; flex-direction: column; gap: 0.6rem; }
+
+        .ft-nl-input {
+          width: 100%; padding: 10px 14px;
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(196, 168, 128, 0.18);
+          border-radius: 6px; color: #d4c4b0;
+          font-size: 0.84rem; font-family: 'DM Sans', sans-serif;
+          outline: none; transition: border-color 0.2s;
+          box-sizing: border-box;
+        }
+
+        .ft-nl-input::placeholder { color: #5a4a38; }
+        .ft-nl-input:focus { border-color: rgba(212, 131, 58, 0.5); }
+
+        .ft-nl-btn {
+          padding: 10px 20px;
+          background: #d4833a; color: #fffcf6;
+          border: none; border-radius: 6px;
+          font-size: 0.78rem; font-weight: 500; letter-spacing: 0.08em;
+          text-transform: uppercase; cursor: pointer;
+          font-family: 'DM Sans', sans-serif;
+          transition: background 0.2s, transform 0.15s;
+        }
+
+        .ft-nl-btn:hover { background: #c07030; transform: translateY(-1px); }
+
+        /* Bottom bar */
+        .ft-bar {
+          border-top: 1px solid rgba(196, 168, 128, 0.1);
+          padding: 1.4rem 2.5rem;
+          max-width: 1280px; margin: 0 auto;
+          display: flex; align-items: center; justify-content: space-between;
+          gap: 1rem;
+        }
+
+        .ft-bottom-wrap {
+          border-top: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .ft-copy { font-size: 0.78rem; color: #4a3a2a; }
+        .ft-made { font-size: 0.78rem; color: #4a3a2a; }
+
+        .ft-made span { color: #d4833a; }
+
+        @media (max-width: 1024px) {
+          .ft-inner { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+        }
+
+        @media (max-width: 640px) {
+          .ft-inner { grid-template-columns: 1fr; padding: 0 1.25rem 3rem; }
+          .ft-bar { padding: 1.2rem 1.25rem; flex-direction: column; text-align: center; }
+        }
+      `}</style>
+
+      <footer className="ft-root ft">
+        <div className="ft-inner">
+          {/* Brand column */}
           <div>
-            <h3 className="text-white text-xl font-bold mb-3">BandhanBD</h3>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Bangladesh's trusted matrimonial platform — connecting families
-              and building lifelong bonds since 2024.
+            <Link to="/" className="ft-brand-name">
+              <span className="ft-gem" />
+              BandhanBD
+            </Link>
+            <p className="ft-tagline">
+              Bangladesh's trusted matrimonial platform — connecting hearts and
+              building lifelong bonds since 2024.
             </p>
-            <div className="flex gap-3 mt-4">
-              {[FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn].map((Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-indigo-600 transition-colors"
-                >
-                  <Icon size={14} />
+            <div className="ft-social">
+              {[
+                { Icon: FaFacebookF, href: "#" },
+                { Icon: FaTwitter, href: "#" },
+                { Icon: FaInstagram, href: "#" },
+                { Icon: FaLinkedinIn, href: "#" },
+              ].map(({ Icon, href }, i) => (
+                <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="ft-soc-btn">
+                  <Icon size={13} />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Quick links */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2 text-sm">
+            <p className="ft-col-title">Platform</p>
+            <ul className="ft-col-links">
               {[
                 { to: "/", label: "Home" },
                 { to: "/biodatapage", label: "Browse Biodatas" },
@@ -39,9 +193,7 @@ const Footer = () => {
                 { to: "/contact", label: "Contact Us" },
               ].map(({ to, label }) => (
                 <li key={to}>
-                  <Link to={to} className="hover:text-indigo-400 transition-colors">
-                    {label}
-                  </Link>
+                  <Link to={to} className="ft-col-link">{label}</Link>
                 </li>
               ))}
             </ul>
@@ -49,44 +201,46 @@ const Footer = () => {
 
           {/* Support */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Support</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link to="/contact" className="hover:text-indigo-400 transition-colors">Help Centre</Link></li>
-              <li><span className="hover:text-indigo-400 cursor-pointer transition-colors">Terms of Service</span></li>
-              <li><span className="hover:text-indigo-400 cursor-pointer transition-colors">Privacy Policy</span></li>
-              <li><span className="hover:text-indigo-400 cursor-pointer transition-colors">Cookie Policy</span></li>
+            <p className="ft-col-title">Support</p>
+            <ul className="ft-col-links">
+              {["Help Centre", "Terms of Service", "Privacy Policy", "Cookie Policy", "Safety Tips"].map((label) => (
+                <li key={label}>
+                  <span className="ft-col-link">{label}</span>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Newsletter */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Stay Updated</h4>
-            <p className="text-sm text-gray-400 mb-3">
-              Get the latest success stories and platform updates.
+            <p className="ft-col-title">Stay Updated</p>
+            <p className="ft-nl-desc">
+              Success stories, matchmaking tips, and platform news — delivered to your inbox.
             </p>
-            <div className="flex gap-2">
+            <div className="ft-nl-form">
               <input
                 type="email"
-                placeholder="Your email"
-                className="flex-1 px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-indigo-500 text-gray-200 placeholder-gray-500"
+                placeholder="Your email address"
+                className="ft-nl-input"
               />
-              <button className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors">
-                Subscribe
-              </button>
+              <button className="ft-nl-btn">Subscribe</button>
             </div>
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} BandhanBD. All rights reserved.
-          </p>
-          <p className="text-gray-500 text-sm">
-            Made with ❤️ for Bangladesh
-          </p>
+        {/* Bottom bar */}
+        <div className="ft-bottom-wrap">
+          <div className="ft-bar">
+            <p className="ft-copy">
+              © {new Date().getFullYear()} BandhanBD. All rights reserved.
+            </p>
+            <p className="ft-made">
+              Made with <span>♥</span> for Bangladesh
+            </p>
+          </div>
         </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 };
 
