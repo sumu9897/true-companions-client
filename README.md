@@ -1,151 +1,338 @@
-# True Companions - Matrimony Platform
+# 💍 BandhanBD — Client
 
-Welcome to True Companions, an intuitive and user-friendly Matrimony platform developed using the MERN stack (MongoDB, Express, React, and Node.js). This platform helps users connect with potential life partners seamlessly. Below is a detailed guide for understanding and using this project.
+> Bangladesh's trusted matrimonial platform. Browse thousands of verified biodata profiles, connect with your ideal match, and share your success story.
 
----
-
-## Live Site
-[Visit True Companions](https://true-companions.web.app/)
-
-
-
----
-
-## Features
-
-1. **Responsive Design**: The platform is optimized for mobile, tablet, and desktop devices.
-2. **Authentication**:
-   - Email/Password login.
-   - Google Sign-in.
-   - JWT-based authentication for secure access.
-3. **Private Routes**: Restrict access to private pages like biodata details, dashboard, and checkout.
-4. **CRUD Notifications**: Sweet alerts and toast notifications for all CRUD operations, login, and sign-up events.
-5. **Dynamic Data Fetching**: Implements Tanstack Query for efficient data fetching and caching.
-6. **Homepage**:
-   - Eye-catching banner/slider.
-   - Displays six premium member biodata cards with ascending/descending sorting.
-   - "How It Works" section explaining the platform functionality.
-   - Success Counter Section showcasing total biodatas, boys, girls, and completed marriages.
-   - Success Stories Section with reviews and couple images sorted by marriage date.
-7. **Filterable Biodatas Page**:
-   - Filter biodatas by age range, gender, and division.
-   - Displays up to 20 biodatas per page with pagination.
-8. **Biodata Details**:
-   - Displays detailed biodata information.
-   - Includes options to add to favorites, request contact information, or make biodata premium.
-   - Shows similar biodatas.
-9. **User Dashboard**:
-   - Edit and view biodata.
-   - Manage contact requests and favorites.
-   - Submit success stories.
-10. **Admin Dashboard**:
-    - Manage users and approve premium biodata.
-    - Approve contact requests.
-    - View success stories and platform statistics (with pie chart visualization).
-11. **Payment Integration**: Stripe integration for contact information requests.
-12. **Pagination**: Implemented on the biodatas page for better user experience.
-13. **Environment Variables**: Firebase config keys and MongoDB credentials are hidden for security.
+[![React](https://img.shields.io/badge/React-18.3-61DAFB?logo=react)](https://reactjs.org)
+[![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?logo=vite)](https://vitejs.dev)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-38B2AC?logo=tailwindcss)](https://tailwindcss.com)
+[![Firebase](https://img.shields.io/badge/Firebase-11.2-FFCA28?logo=firebase)](https://firebase.google.com)
+[![Stripe](https://img.shields.io/badge/Stripe-Payments-635BFF?logo=stripe)](https://stripe.com)
 
 ---
 
-## Installation & Setup
+## 🌐 Live Demo
 
-1. **Clone the Repository**:
-```bash
-# Clone the client-side repository
-https://github.com/sumu9897/true-companions-client
+| Resource | URL |
+|---|---|
+| 🖥️ Live Site | [https://true-companions.web.app](https://true-companions.web.app) |
+| 🔧 Server API | [https://true-companions-server.vercel.app](https://true-companions-server.vercel.app) |
+| 👤 Admin Email | `admin@bandhanbd.com` |
+| 🔑 Admin Password | `Admin@12345` |
 
-# Navigate to the project directory
-cd true-companions-client
+---
+
+## ✨ Key Features
+
+1. **Homepage** — Hero banner, 6 premium member cards (sortable by age), How It Works section, animated success counters, and success stories sorted by marriage date
+2. **Browse Biodatas** — Paginated biodata listing (20 per page) with filters for age range, gender, and division
+3. **Biodata Details** — Full profile view with 3 similar biodatas; contact info hidden for non-premium users
+4. **Firebase Authentication** — Email/password registration with profile photo upload, Google OAuth, and JWT-based session persistence across page refreshes
+5. **Create & Edit Biodata** — 20-field biodata form with auto-calculated age from date of birth and image upload via ImgBB
+6. **View My Biodata** — Read-only profile view with "Request Premium Status" button triggering admin approval workflow
+7. **Favourites** — Save and manage favourite biodata profiles from a dedicated dashboard table
+8. **Stripe Payment** — Secure $5 USD card payment to request contact information for a specific biodata
+9. **My Contact Requests** — Track all contact requests; approved requests reveal mobile and email of the profile
+10. **Got Married Form** — Submit a success story with couple photo, marriage date, star rating, and story text
+11. **Admin Dashboard** — KPI cards + pie chart showing total/male/female/premium counts and revenue
+12. **Manage Users** — Search users by name, make admin, grant premium, or delete users
+13. **Approve Premium Requests** — Admin queue for approving biodata premium status requests
+14. **Approve Contact Requests** — Admin queue to approve paid contact info requests
+15. **Fully Responsive** — Mobile-first design with collapsible sidebar dashboard and drawer filters
+
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technology |
+|---|---|
+| Framework | React 18 + Vite |
+| Styling | Tailwind CSS (no DaisyUI) |
+| Routing | React Router DOM v7 |
+| State / Data Fetching | TanStack Query v5 |
+| Authentication | Firebase Auth (Email + Google OAuth) |
+| HTTP Client | Axios (with JWT interceptor) |
+| Payment | Stripe React + Stripe.js |
+| Forms | React Hook Form |
+| Notifications | SweetAlert2 |
+| Charts | Recharts |
+| Animations | Framer Motion |
+| Image Hosting | ImgBB API |
+| Icons | React Icons |
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── main.jsx                          # App entry point
+├── index.css                         # Global styles
+│
+├── firebase/
+│   └── firebase.config.js            # Firebase initialization
+│
+├── providers/
+│   └── AuthProvider.jsx              # Auth context + JWT issuance
+│
+├── hooks/
+│   ├── useAuth.jsx                   # Access AuthContext
+│   ├── useAdmin.jsx                  # Check admin role via TanStack Query
+│   ├── useAxiosPublic.jsx            # Public Axios instance
+│   ├── useAxiosSecure.jsx            # JWT-intercepted Axios instance
+│   └── useFavorite.jsx               # Fetch user favourites
+│
+├── Routes/
+│   ├── Routes.jsx                    # Full router definition
+│   ├── PrivateRoute.jsx              # Redirect guests to /login
+│   └── AdminRoute.jsx                # Redirect non-admins to /
+│
+├── Layout/
+│   ├── Main.jsx                      # Public layout (Navbar + Footer)
+│   └── Dashboard.jsx                 # Dashboard layout (sidebar + outlet)
+│
+├── components/
+│   ├── Banner.jsx                    # Hero section
+│   ├── Loading.jsx                   # Spinner component
+│   ├── Premium.jsx                   # Premium member cards
+│   └── SocialLogin/
+│       └── SocialLogin.jsx           # Google sign-in button
+│
+└── Pages/
+    ├── Shared/
+    │   ├── Navbar.jsx                # Sticky responsive navbar
+    │   └── Footer.jsx                # 4-column footer
+    │
+    ├── Home/
+    │   ├── Home.jsx
+    │   ├── Works.jsx                 # How It Works section
+    │   ├── SuccessCounter.jsx        # Animated stat counters
+    │   └── SuccessStory.jsx          # Success story cards
+    │
+    ├── BiodatasPage/
+    │   └── BiodatasPage.jsx          # Filter sidebar + paginated grid
+    │
+    ├── BiodataDetails/
+    │   └── BiodataDetails.jsx        # Full profile + similar biodatas
+    │
+    ├── Login/
+    │   └── Login.jsx
+    │
+    ├── SignUp/
+    │   └── SignUp.jsx
+    │
+    ├── About/About.jsx
+    ├── Contact/ContactUs.jsx
+    ├── ErrorPage/ErrorPage.jsx
+    │
+    └── Dashboard/
+        ├── User/
+        │   ├── EditBiodata.jsx       # Create / update biodata (upsert)
+        │   ├── ViewBiodata.jsx       # Read-only profile + premium request
+        │   ├── MyContactRequest.jsx  # Contact request status table
+        │   ├── FavouriteBiodata.jsx  # Saved profiles table
+        │   ├── GotMarriedForm.jsx    # Success story submission
+        │   ├── CheckOut.jsx          # Stripe Elements wrapper
+        │   └── CheckoutForm.jsx      # Card form + payment flow
+        │
+        └── Admin/
+            ├── DashboardPage.jsx     # KPI cards + pie chart
+            ├── ManageUsers.jsx       # User management table
+            ├── ApprovedPremium.jsx   # Premium approval queue
+            └── ApprovedContactReq.jsx # Contact request approval
 ```
 
-2. **Install Dependencies**:
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js **18+**
+- npm or yarn
+- Firebase project
+- Stripe account (test mode)
+- ImgBB account
+
+### Installation
+
 ```bash
+# 1. Clone the repository
+git clone https://github.com/sumu9897/bandhanbd-client.git
+cd bandhanbd-client
+
+# 2. Install dependencies
 npm install
+
+# 3. Configure environment variables
+cp .env.example .env
+# Fill in your values (see Environment Variables section below)
+
+# 4. Start the development server
+npm run dev
 ```
 
-3. **Environment Variables**:
-Create a `.env` file in the root directory and add the following variables:
+The app will be available at `http://localhost:5173`.
+
+---
+
+## 🔐 Environment Variables
+
+Create a `.env` file in the project root:
+
 ```env
-REACT_APP_FIREBASE_API_KEY=<Your Firebase API Key>
-REACT_APP_AUTH_DOMAIN=<Your Firebase Auth Domain>
-REACT_APP_PROJECT_ID=<Your Firebase Project ID>
-REACT_APP_STORAGE_BUCKET=<Your Firebase Storage Bucket>
-REACT_APP_MESSAGING_SENDER_ID=<Your Firebase Messaging Sender ID>
-REACT_APP_APP_ID=<Your Firebase App ID>
-REACT_APP_SERVER_URL=<Your Backend Server URL>
+# Server API
+VITE_API_BASE_URL=https://your-server-domain.vercel.app
+
+# Firebase
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+
+# Stripe (publishable key only — never the secret key)
+VITE_STRIPE_PUBLIC_KEY=pk_test_xxxxxxxxxxxx
+
+# ImgBB image hosting
+VITE_IMAGE_HOSTING_KEY=your_imgbb_key
 ```
 
-4. **Run the Project**:
+> ⚠️ Never commit `.env` to version control. It is already listed in `.gitignore`.
+
+---
+
+## 🔑 Authentication Flow
+
+```
+User signs in (Firebase)
+       ↓
+AuthProvider detects onAuthStateChanged
+       ↓
+POST /jwt { email } → Server issues 7-day JWT
+       ↓
+JWT stored in localStorage
+       ↓
+useAxiosSecure attaches JWT to every request header
+       ↓
+Server verifies JWT → grants/denies access
+```
+
+- Session persists across page refreshes via `onAuthStateChanged` re-issuing the JWT
+- 401/403 responses automatically log the user out and redirect to `/login`
+
+---
+
+## 💳 Payment Flow
+
+```
+User clicks "Request Contact Info" on a biodata
+       ↓
+Redirected to /checkout/:biodataId (PrivateRoute)
+       ↓
+POST /payment/create-intent → Stripe PaymentIntent created ($5)
+       ↓
+User enters card details → stripe.confirmCardPayment()
+       ↓
+On success:
+  1. POST /payments         → save payment record
+  2. POST /contact-requests → create pending contact request
+       ↓
+Admin approves from dashboard
+       ↓
+User sees contact info in "My Contact Requests"
+```
+
+**Stripe Test Cards:**
+
+| Card Number | Result |
+|---|---|
+| `4242 4242 4242 4242` | ✅ Payment succeeds |
+| `4000 0000 0000 9995` | ❌ Payment declined |
+| `4000 0025 0000 3155` | 🔐 3D Secure required |
+
+Use any future expiry date and any 3-digit CVV.
+
+---
+
+## 🧭 Route Map
+
+| Path | Access | Component |
+|---|---|---|
+| `/` | Public | Home |
+| `/biodatapage` | Public | BiodatasPage |
+| `/biodata/:id` | Private | BiodataDetails |
+| `/about` | Public | About |
+| `/contact` | Public | ContactUs |
+| `/login` | Public | Login |
+| `/signup` | Public | SignUp |
+| `/checkout/:biodataId` | Private | CheckOut |
+| `/dashboard/edit-biodata` | Private | EditBiodata |
+| `/dashboard/view-biodata` | Private | ViewBiodata |
+| `/dashboard/contact-request` | Private | MyContactRequest |
+| `/dashboard/my-favourites` | Private | FavouriteBiodata |
+| `/dashboard/got-married` | Private | GotMarriedForm |
+| `/dashboard/admin` | Admin | DashboardPage |
+| `/dashboard/manage` | Admin | ManageUsers |
+| `/dashboard/approvedPremium` | Admin | ApprovedPremium |
+| `/dashboard/approvedContactRequest` | Admin | ApprovedContactReq |
+
+---
+
+## 📦 Build & Deploy
+
 ```bash
-npm start
+# Production build
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+### Deploy to Firebase Hosting
+
+```bash
+npm install -g firebase-tools
+firebase login
+firebase init hosting
+npm run build
+firebase deploy
+```
+
+Make sure `firebase.json` is configured for SPA routing:
+
+```json
+{
+  "hosting": {
+    "public": "dist",
+    "rewrites": [{ "source": "**", "destination": "/index.html" }]
+  }
+}
 ```
 
 ---
 
-## Technology Stack
+## 🧪 Test Accounts
 
-- **Frontend**: React.js, React Router, Tanstack Query, Axios
-- **Backend**: Node.js, Express.js, MongoDB
-- **Authentication**: Firebase Authentication, JWT
-- **Payment Gateway**: Stripe
-- **Styling**: Tailwind CSS (without Daisy UI)
-- **Charts**: React Chart.js
-
----
-
-## Folder Structure
-
-```plaintext
-src
-├── assets         # Static assets like images
-├── components     # Reusable UI components
-├── contexts       # Context providers for global state management
-├── hooks          # Custom hooks
-├── layouts        # Layout components for pages
-├── pages          # Page components (Home, Dashboard, Login, etc.)
-├── routes         # Route configuration and private routes
-├── services       # API service functions
-├── styles         # CSS and Tailwind configurations
-├── utils          # Utility functions and helpers
-└── App.js         # Root component
-```
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@bandhanbd.com` | `Admin@12345` |
+| User | `user@bandhanbd.com` | `User@12345` |
+| Premium User | `premium@bandhanbd.com` | `Premium@12345` |
 
 ---
 
-## Key Pages
+## 📜 Scripts
 
-### 1. **Homepage**
-- Banner/Slider.
-- Premium biodata cards with sorting.
-- "How It Works", Success Counter, and Success Story sections.
-
-### 2. **Biodatas Page**
-- Filterable and paginated biodatas.
-- Displays 20 biodatas per page.
-- Private route for viewing biodata details.
-
-### 3. **Login & Registration**
-- Login with email/password or Google.
-- Registration with photo upload.
-
-### 4. **Dashboard**
-#### User Dashboard:
-- Edit biodata.
-- View biodata.
-- Manage contact requests and favorites.
-- Submit success stories.
-
-#### Admin Dashboard:
-- Manage users, approve premium biodata, and contact requests.
-- View success stories and platform statistics.
+| Command | Description |
+|---|---|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
 
 ---
 
-## Contribution
-Feel free to fork this repository and submit pull requests for improvements or new features.
+## 📄 License
 
----
-
-## License
 This project is licensed under the MIT License.
