@@ -16,8 +16,7 @@
 |---|---|
 | 🖥️ Live Site | [https://true-companions.web.app](https://true-companions.web.app) |
 | 🔧 Server API | [https://true-companions-server.vercel.app](https://true-companions-server.vercel.app) |
-| 👤 Admin Email | `admin@bandhanbd.com` |
-| 🔑 Admin Password | `Admin@12345` |
+
 
 ---
 

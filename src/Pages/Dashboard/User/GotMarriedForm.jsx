@@ -1,27 +1,29 @@
-import React, { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { FaStar } from "react-icons/fa";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useAxiosPublic from "../../../hooks/useAxiosPublic";
+import Swal from "sweetalert2";
 
-const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
-const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
+const IMAGE_HOSTING_API = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMAGE_HOSTING_KEY}`;
 
 const GotMarriedForm = () => {
   const axiosSecure = useAxiosSecure();
-  const [formData, setFormData] = useState({
+  const axiosPublic = useAxiosPublic();
+
+  const [form, setForm] = useState({
     selfBiodataId: "",
     partnerBiodataId: "",
-    coupleImage: "",
     successStory: "",
     marriageDate: "",
     reviewStar: 0,
   });
+  const [coupleImageUrl, setCoupleImageUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleImageUpload = async (e) => {
@@ -33,172 +35,195 @@ const GotMarriedForm = () => {
 
     try {
       setUploading(true);
-      const response = await fetch(image_hosting_api, {
-        method: "POST",
-        body: formData,
+      const res = await axiosPublic.post(IMAGE_HOSTING_API, formData, {
+        headers: { "content-type": "multipart/form-data" },
       });
-      const data = await response.json();
-
-      if (data.success) {
-        setFormData((prevData) => ({
-          ...prevData,
-          coupleImage: data.data.display_url,
-        }));
-        toast.success("Image uploaded successfully!");
-      } else {
-        toast.error("Failed to upload image.");
+      if (res.data.success) {
+        setCoupleImageUrl(res.data.data.url);
+        Swal.fire({ icon: "success", title: "Image uploaded!", timer: 1200, showConfirmButton: false });
       }
-    } catch (error) {
-      console.error("Image upload error:", error);
-      toast.error("An error occurred while uploading the image.");
+    } catch {
+      Swal.fire({ icon: "error", title: "Image upload failed" });
     } finally {
       setUploading(false);
     }
   };
 
-  const handleStarClick = (rating) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      reviewStar: rating,
-    }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !formData.selfBiodataId ||
-      !formData.partnerBiodataId ||
-      !formData.successStory ||
-      !formData.marriageDate ||
-      !formData.reviewStar
-    ) {
-      toast.error("Please fill out all required fields.");
-      return;
+    if (!form.selfBiodataId || !form.partnerBiodataId || !form.successStory || !form.marriageDate || !form.reviewStar) {
+      return Swal.fire({ icon: "warning", title: "Please fill in all required fields." });
     }
 
+    setSubmitting(true);
     try {
-      const response = await axiosSecure.post("/successStory", formData);
-      toast.success("Success story submitted successfully!");
-      setFormData({
-        selfBiodataId: "",
-        partnerBiodataId: "",
-        coupleImage: "",
-        successStory: "",
-        marriageDate: "",
-        reviewStar: 0,
+      await axiosSecure.post("/success-stories", {
+        ...form,
+        coupleImage: coupleImageUrl,
       });
+      Swal.fire({
+        icon: "success",
+        title: "Story Submitted!",
+        text: "Thank you for sharing your happy story with the BandhanBD community.",
+        timer: 2500,
+        showConfirmButton: false,
+      });
+      setForm({ selfBiodataId: "", partnerBiodataId: "", successStory: "", marriageDate: "", reviewStar: 0 });
+      setCoupleImageUrl("");
     } catch (error) {
-      console.error("Error submitting success story:", error);
-      toast.error(
-        error.response?.data?.message || "An error occurred. Please try again later."
-      );
+      Swal.fire({
+        icon: "error",
+        title: "Submission Failed",
+        text: error.response?.data?.message || "Please try again.",
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 
+  const inputClass = "w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400";
+
   return (
-    <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
-      <ToastContainer />
-      <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
-        Submit Your Success Story
-      </h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Self Biodata ID:
-          </label>
-          <input
-            type="text"
-            name="selfBiodataId"
-            value={formData.selfBiodataId}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-          />
+    <>
+      <Helmet>
+        <title>Got Married — BandhanBD</title>
+      </Helmet>
+
+      <div className="max-w-xl mx-auto">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">Share Your Success Story</h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Did you find your partner through BandhanBD? Share your story to inspire others!
+          </p>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Partner Biodata ID:
-          </label>
-          <input
-            type="text"
-            name="partnerBiodataId"
-            value={formData.partnerBiodataId}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Couple Image:
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-          />
-          {uploading && <p className="text-blue-500 mt-2">Uploading image...</p>}
-          {formData.coupleImage && (
-            <img
-              src={formData.coupleImage}
-              alt="Couple"
-              className="mt-4 w-32 h-32 object-cover rounded-md"
-            />
-          )}
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Marriage Date:
-          </label>
-          <input
-            type="date"
-            name="marriageDate"
-            value={formData.marriageDate}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Review Star:
-          </label>
-          <div className="flex space-x-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <FaStar
-                key={star}
-                size={24}
-                className={`cursor-pointer ${
-                  formData.reviewStar >= star ? "text-yellow-500" : "text-gray-300"
-                }`}
-                onClick={() => handleStarClick(star)}
-              />
-            ))}
-          </div>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Success Story Review:
-          </label>
-          <textarea
-            name="successStory"
-            value={formData.successStory}
-            onChange={handleChange}
-            rows="5"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition duration-300"
+
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5"
         >
-          Submit
-        </button>
-      </form>
-    </div>
+          {/* Biodata IDs */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Your Biodata ID <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                name="selfBiodataId"
+                value={form.selfBiodataId}
+                onChange={handleChange}
+                placeholder="e.g. 12"
+                required
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Partner's Biodata ID <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                name="partnerBiodataId"
+                value={form.partnerBiodataId}
+                onChange={handleChange}
+                placeholder="e.g. 24"
+                required
+                className={inputClass}
+              />
+            </div>
+          </div>
+
+          {/* Marriage Date */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              Marriage Date <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              name="marriageDate"
+              value={form.marriageDate}
+              onChange={handleChange}
+              required
+              className={inputClass}
+            />
+          </div>
+
+          {/* Rating */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Rating <span className="text-red-500">*</span>
+            </label>
+            <div className="flex items-center gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setForm((p) => ({ ...p, reviewStar: star }))}
+                  className="transition-transform hover:scale-110"
+                >
+                  <FaStar
+                    size={28}
+                    className={form.reviewStar >= star ? "text-yellow-400" : "text-gray-200"}
+                  />
+                </button>
+              ))}
+              <span className="text-sm text-gray-500 ml-2">
+                {form.reviewStar > 0 ? `${form.reviewStar} / 5` : "Select rating"}
+              </span>
+            </div>
+          </div>
+
+          {/* Couple Image */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              Couple Photo (optional)
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              disabled={uploading}
+              className="w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 file:font-medium"
+            />
+            {uploading && (
+              <p className="text-indigo-600 text-xs mt-1 animate-pulse">Uploading image…</p>
+            )}
+            {coupleImageUrl && (
+              <img
+                src={coupleImageUrl}
+                alt="Couple"
+                className="mt-3 w-32 h-32 object-cover rounded-xl shadow-sm"
+              />
+            )}
+          </div>
+
+          {/* Success Story */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              Your Story <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              name="successStory"
+              value={form.successStory}
+              onChange={handleChange}
+              rows={5}
+              required
+              placeholder="Tell us how you met and what makes your journey special…"
+              className={inputClass}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={submitting || uploading}
+            className="w-full bg-indigo-600 text-white font-semibold py-3 rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {submitting ? "Submitting…" : "Submit Success Story"}
+          </button>
+        </form>
+      </div>
+    </>
   );
 };
 

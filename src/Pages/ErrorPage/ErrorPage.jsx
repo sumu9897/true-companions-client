@@ -1,24 +1,28 @@
-import React from "react";
+import { Link, useRouteError } from "react-router-dom";
 
 const ErrorPage = () => {
+  const error = useRouteError();
+
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100 text-gray-800">
-      <div className="text-center">
-        <h1 className="text-9xl font-extrabold text-gray-900">404</h1>
-        <p className="text-2xl md:text-3xl font-semibold mt-4">
-          Oops! Page not found
-        </p>
-        <p className="text-gray-600 mt-2">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-        <div className="mt-6">
-          <a
-            href="/"
-            className="px-6 py-3 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition duration-300"
-          >
-            Go back home
-          </a>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 px-4">
+      <div className="text-center max-w-md">
+        <div className="text-8xl font-extrabold text-indigo-200 mb-4">
+          {error?.status || "404"}
         </div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-3">
+          {error?.status === 404 ? "Page Not Found" : "Something Went Wrong"}
+        </h1>
+        <p className="text-gray-500 mb-8">
+          {error?.statusText ||
+            error?.message ||
+            "The page you're looking for doesn't exist or has been moved."}
+        </p>
+        <Link
+          to="/"
+          className="inline-block bg-indigo-600 text-white font-semibold px-6 py-3 rounded-xl hover:bg-indigo-700 transition-colors"
+        >
+          Back to Home
+        </Link>
       </div>
     </div>
   );
