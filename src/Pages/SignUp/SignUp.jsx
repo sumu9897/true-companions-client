@@ -1,263 +1,147 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Helmet } from "react-helmet-async";
-import signup from "../../assets/signup/signup.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../../providers/AuthProvider";
-import Swal from "sweetalert2";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
-import SocialLogin from "../../Components/SocialLogin/SocialLogin";
+import SocialLogin from "../../components/SocialLogin/SocialLogin";
+import Swal from "sweetalert2";
 
-const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
-const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
+const IMAGE_HOSTING_API = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMAGE_HOSTING_KEY}`;
 
 const SignUp = () => {
+  const { createUser, updateUserProfile } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm();
-  const axiosPublic = useAxiosPublic();
-  const { createUser, updateUserProfile } = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const onSubmit = async (data) => {
     try {
-      // Prepare the image for upload
+      // Upload profile image
       const formData = new FormData();
-      const imageFile = data.photoURL[0];
+      formData.append("image", data.photoFile[0]);
+      const imgRes = await fetch(IMAGE_HOSTING_API, { method: "POST", body: formData });
+      const imgData = await imgRes.json();
 
-      if (!imageFile) {
-        Swal.fire({
-          title: "No image selected",
-          text: "Please select a photo to upload.",
-          icon: "warning",
-          confirmButtonText: "OK",
-        });
-        return;
+      if (!imgData.success) {
+        return Swal.fire({ icon: "error", title: "Image upload failed. Please try again." });
       }
+      const photoURL = imgData.data.url;
 
-      formData.append("image", imageFile);
+      // Create Firebase user
+      const result = await createUser(data.email, data.password);
+      await updateUserProfile(data.name, photoURL);
 
-      const response = await fetch(image_hosting_api, {
-        method: "POST",
-        body: formData,
+      // Sync user to DB
+      await axiosPublic.post("/users", {
+        name: data.name,
+        email: data.email,
+        photoURL,
       });
-      const result = await response.json();
 
-      if (result.success) {
-        const imageURL = result.data.url;
-        console.log("Image URL:", imageURL);
-
-        createUser(data.email, data.password)
-          .then((result) => {
-            const loggedUser = result.user;
-            // console.log("User created successfully:", loggedUser);
-
-            if (loggedUser) {
-              updateUserProfile(data.name, imageURL)
-                .then(() => {
-                  console.log("User profile info updated");
-
-                  loggedUser
-                    .reload()
-                    .then(() => {
-                      console.log("User profile reloaded:", loggedUser);
-                      const userInfo = {
-                        name: data.name,
-                        email: data.email,
-                      };
-                      axiosPublic.post("/users", userInfo).then((res) => {
-                        if (res.data.insertedId) {
-                          console.log('user added to the database')
-                          reset();
-                          // Swal.fire({
-                          //   position: "top-end",
-                          //   icon: "success",
-                          //   title: "User created successfully",
-                          //   showCancelButton: false,
-                          //   timer: 1500,
-                          // });
-                          navigate("/");
-                        }
-                      });
-                    })
-                    .catch((error) => {
-                      console.error("Error reloading user profile:", error);
-                    });
-                })
-                .catch((error) =>
-                  console.log("Error updating user profile:", error)
-                );
-            }
-
-            Swal.fire({
-              title: "User Created Successfully!",
-              text: "Welcome to True Companions.",
-              icon: "success",
-              confirmButtonText: "OK",
-            });
-          })
-          .catch((error) => {
-            console.error("Error creating user:", error.message);
-
-            Swal.fire({
-              title: "Error!",
-              text: error.message,
-              icon: "error",
-              confirmButtonText: "Try Again",
-            });
-          });
-      } else {
-        console.error("Image upload failed:", result);
-        Swal.fire({
-          title: "Image Upload Failed",
-          text: "Please try again.",
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-      }
-    } catch (error) {
-      console.error("Error uploading image:", error.message);
       Swal.fire({
-        title: "Error!",
-        text: error.message,
-        icon: "error",
-        timer: 2000,
+        icon: "success",
+        title: "Account Created!",
+        text: "Welcome to BandhanBD.",
+        timer: 1800,
         showConfirmButton: false,
       });
+      reset();
+      navigate("/");
+    } catch (error) {
+      Swal.fire({ icon: "error", title: "Registration Failed", text: error.message });
     }
   };
 
   return (
     <>
       <Helmet>
-        <title>True Companions | Sign Up</title>
+        <title>Sign Up — BandhanBD</title>
       </Helmet>
-      <div className="flex flex-col lg:flex-row-reverse min-h-screen items-center justify-center bg-gray-50">
-        {/* Image Section */}
-        <div className="w-full lg:w-1/2 flex justify-center p-4">
-          <img
-            className="max-w-xs sm:max-w-md lg:max-w-full"
-            src={signup}
-            alt="Sign Up"
-          />
-        </div>
 
-        {/* Form Section */}
-        <div className="w-full lg:w-1/2 max-w-lg p-6 bg-white shadow-lg rounded-md mx-4 lg:mx-8">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <h2 className="text-3xl font-bold text-center text-gray-800">
-              Sign Up
-            </h2>
-            <p className="text-sm text-center text-gray-600">
-              Create your account to get started!
-            </p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 px-4 py-12">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
+            <p className="text-gray-500 mt-2 text-sm">Join BandhanBD and find your life partner</p>
+          </div>
 
-            {/* Name Input */}
-            <div className="space-y-1">
-              <label className="block text-gray-700 font-medium">Name</label>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Full Name</label>
               <input
                 type="text"
-                name="name"
-                {...register("name", { required: true })}
-                placeholder="Enter Your Name"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Your full name"
+                {...register("name", { required: "Name is required" })}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
               />
-              {errors.name && (
-                <span className="text-red-600 text-sm">Name is required</span>
-              )}
+              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
             </div>
 
-            {/* Photo Upload Input */}
-            <div className="space-y-1">
-              <label className="block text-gray-700 font-medium">
-                Photo Upload
-              </label>
-              <input
-                type="file"
-                {...register("photoURL", { required: true })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              {errors.photoURL && (
-                <span className="text-red-600 text-sm">
-                  Photo URL is required
-                </span>
-              )}
-            </div>
-
-            {/* Email Input */}
-            <div className="space-y-1">
-              <label className="block text-gray-700 font-medium">Email</label>
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Email Address</label>
               <input
                 type="email"
-                name="email"
-                {...register("email", { required: true })}
-                placeholder="Enter Your Email"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="you@example.com"
+                {...register("email", { required: "Email is required" })}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
               />
-              {errors.email && (
-                <span className="text-red-600 text-sm">Email is required</span>
-              )}
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
             </div>
 
-            {/* Password Input */}
-            <div className="space-y-1">
-              <label className="block text-gray-700 font-medium">
-                Password
-              </label>
+            {/* Profile Photo */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Profile Photo</label>
+              <input
+                type="file"
+                accept="image/*"
+                {...register("photoFile", { required: "Profile photo is required" })}
+                className="w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 file:font-medium hover:file:bg-indigo-100"
+              />
+              {errors.photoFile && <p className="text-red-500 text-xs mt-1">{errors.photoFile.message}</p>}
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Password</label>
               <input
                 type="password"
-                name="password"
+                placeholder="At least 8 characters"
                 {...register("password", {
-                  required: true,
-                  minLength: 6,
-                  maxLength: 32,
-                  pattern: /(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z])/,
+                  required: "Password is required",
+                  minLength: { value: 8, message: "Minimum 8 characters" },
+                  pattern: {
+                    value: /(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])/,
+                    message: "Must include uppercase, lowercase, and a number",
+                  },
                 })}
-                placeholder="Enter Your Password"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
               />
-              {errors.password?.type === "required" && (
-                <span className="text-red-600 text-sm">
-                  Password is required
-                </span>
-              )}
-              {errors.password?.type === "maxLength" && (
-                <span className="text-red-600 text-sm">
-                  Password must be less than 32 characters
-                </span>
-              )}
-              {errors.password?.type === "minLength" && (
-                <span className="text-red-600 text-sm">
-                  Password must be at least 6 characters
-                </span>
-              )}
-              {errors.password?.type === "pattern" && (
-                <span className="text-red-600 text-sm">
-                  Password must include uppercase, lowercase, number, and
-                  special character
-                </span>
-              )}
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
             </div>
 
-            {/* Submit Button */}
-            <div className="mt-6">
-              <input
-                type="submit"
-                className="w-full bg-blue-500 text-white font-medium py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition"
-                value="Sign Up"
-              />
-            </div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-indigo-600 text-white font-semibold py-3 rounded-xl hover:bg-indigo-700 transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? "Creating Account…" : "Create Account"}
+            </button>
           </form>
-          <SocialLogin></SocialLogin>
 
-          {/* Login Redirect */}
-          <p className="text-center mt-4 text-gray-600">
+          <SocialLogin />
+
+          <p className="text-center text-sm text-gray-500 mt-6">
             Already have an account?{" "}
-            <Link to="/login" className="text-blue-500 hover:underline">
-              Login here
+            <Link to="/login" className="text-indigo-600 font-semibold hover:underline">
+              Sign in
             </Link>
           </p>
         </div>
