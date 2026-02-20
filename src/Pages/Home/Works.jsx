@@ -1,72 +1,81 @@
-import React from 'react';
-import { FaUser, FaSearch, FaHandshake, FaHeart } from 'react-icons/fa';
+import { FaUserEdit, FaSearch, FaEnvelope, FaHeart } from "react-icons/fa";
+
+const steps = [
+  {
+    icon: FaUserEdit,
+    title: "Create Your Biodata",
+    description:
+      "Register and fill out your personal biodata with details about yourself, your family, and what you are looking for in a life partner.",
+    color: "bg-indigo-100 text-indigo-600",
+  },
+  {
+    icon: FaSearch,
+    title: "Browse & Filter",
+    description:
+      "Search through thousands of verified biodata profiles using filters for age, division, and gender to find your ideal match.",
+    color: "bg-rose-100 text-rose-600",
+  },
+  {
+    icon: FaEnvelope,
+    title: "Request Contact Info",
+    description:
+      "When you find a promising match, request their contact information through our secure, admin-verified contact request system.",
+    color: "bg-amber-100 text-amber-600",
+  },
+  {
+    icon: FaHeart,
+    title: "Begin Your Journey",
+    description:
+      "Connect with your chosen match through their verified contact details and take the first steps toward a lifelong companionship.",
+    color: "bg-emerald-100 text-emerald-600",
+  },
+];
 
 const Works = () => {
   return (
-    <div className="py-12">
-      <div className="container mx-auto px-6 lg:px-20">
-        {/* Section Title */}
+    <section className="py-16 bg-indigo-50">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-indigo-700">How It Works</h2>
-          <p className="mt-4 text-lg text-gray-600">
-            Our simple and effective process helps you connect with the right partner. Here’s how it works:
+          <span className="text-xs font-semibold uppercase tracking-widest text-indigo-600">
+            How It Works
+          </span>
+          <h2 className="text-3xl font-bold text-gray-900 mt-2">
+            Your Path to Finding the Right Partner
+          </h2>
+          <p className="text-gray-500 mt-3 max-w-xl mx-auto">
+            Our simple four-step process is designed to help you find a
+            meaningful connection with complete safety and transparency.
           </p>
         </div>
 
-        {/* Steps Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Step 1 */}
-          <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-            <FaUser className="text-4xl text-primary mb-4 mx-auto" />
-            <h3 className="text-xl font-semibold text-gray-800">Step 1: Create Your Profile</h3>
-            <p className="text-gray-600 mt-2">
-              Register and fill out your profile with important information about yourself, preferences, and what you're looking for in a partner.
-            </p>
-          </div>
-
-          {/* Step 2 */}
-          <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-            <FaSearch className="text-4xl text-primary mb-4 mx-auto" />
-            <h3 className="text-xl font-semibold text-gray-800">Step 2: Browse & Filter Biodata</h3>
-            <p className="text-gray-600 mt-2">
-              Browse through a curated list of biodata and use filters to find matches that align with your values, preferences, and goals.
-            </p>
-          </div>
-
-          {/* Step 3 */}
-          <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-            <FaHandshake className="text-4xl text-primary mb-4 mx-auto" />
-            <h3 className="text-xl font-semibold text-gray-800">Step 3: Connect & Engage</h3>
-            <p className="text-gray-600 mt-2">
-              Reach out to potential matches and start a conversation. Whether you prefer to chat online or arrange a meeting, the choice is yours.
-            </p>
-          </div>
-
-          {/* Step 4 */}
-          <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-            <FaHeart className="text-4xl text-primary mb-4 mx-auto" />
-            <h3 className="text-xl font-semibold text-gray-800">Step 4: Find Your Perfect Match</h3>
-            <p className="text-gray-600 mt-2">
-              Build a relationship with your chosen match and explore a future filled with love and companionship.
-            </p>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {steps.map((step, index) => (
+            <div
+              key={index}
+              className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow text-center"
+            >
+              <div className={`w-14 h-14 ${step.color} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
+                <step.icon size={24} />
+              </div>
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                Step {index + 1}
+              </span>
+              <h3 className="text-lg font-bold text-gray-900 mt-1 mb-3">{step.title}</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">{step.description}</p>
+            </div>
+          ))}
         </div>
 
-        {/* Call to Action */}
         <div className="text-center mt-12">
-          <h3 className="text-2xl font-semibold text-indigo-700 mb-4">Ready to Get Started?</h3>
-          <p className="text-lg text-gray-600 mb-6">
-            Join our platform today and begin your journey to find the perfect partner!
-          </p>
           <a
             href="/signup"
-            className="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-300"
+            className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl transition-colors"
           >
-            Create Account
+            Create Your Biodata Today
           </a>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
