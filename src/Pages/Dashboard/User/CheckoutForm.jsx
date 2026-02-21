@@ -13,21 +13,22 @@ const PRICE_USD = 5;
 
 const CheckoutForm = () => {
   const { biodataId: mongoId } = useParams();
-  const navigate = useNavigate();
-  const stripe = useStripe();
-  const elements = useElements();
+  const navigate    = useNavigate();
+  const stripe      = useStripe();
+  const elements    = useElements();
   const axiosSecure = useAxiosSecure();
   const axiosPublic = useAxiosPublic();
-  const { user } = useAuth();
+  const { user }    = useAuth();
 
   const [clientSecret, setClientSecret] = useState("");
-  const [cardError, setCardError] = useState("");
-  const [cardFocused, setCardFocused] = useState(false);
-  const [processing, setProcessing] = useState(false);
-  const [succeeded, setSucceeded] = useState(false);
-  const [cardReady, setCardReady] = useState(false);
+  const [cardError,    setCardError]    = useState("");
+  const [cardFocused,  setCardFocused]  = useState(false);
+  const [cardHasError, setCardHasError] = useState(false);
+  const [processing,   setProcessing]   = useState(false);
+  const [succeeded,    setSucceeded]    = useState(false);
+  const [cardReady,    setCardReady]    = useState(false);
 
-  // Fetch biodata to display name + sequential biodataId (not MongoDB _id)
+  // Fetch biodata name + sequential biodataId
   const { data: biodata } = useQuery({
     queryKey: ["checkout-biodata", mongoId],
     enabled: !!mongoId,
@@ -40,7 +41,7 @@ const CheckoutForm = () => {
     },
   });
 
-  // Create Stripe PaymentIntent
+  // Create PaymentIntent on mount
   useEffect(() => {
     if (!mongoId) return;
     axiosSecure
@@ -51,8 +52,8 @@ const CheckoutForm = () => {
       );
   }, [axiosSecure, mongoId]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // ── Payment handler — called from button onClick, NOT form onSubmit ──────
+  const handlePay = async () => {
     if (!stripe || !elements || !clientSecret || processing || succeeded) return;
 
     const card = elements.getElement(CardElement);
@@ -68,7 +69,7 @@ const CheckoutForm = () => {
           card,
           billing_details: {
             email: user?.email || "anonymous",
-            name: user?.displayName || "anonymous",
+            name:  user?.displayName || "anonymous",
           },
         },
       }
@@ -83,15 +84,15 @@ const CheckoutForm = () => {
     if (paymentIntent?.status === "succeeded") {
       try {
         await axiosSecure.post("/payments", {
-          email: user.email,
-          amount: PRICE_USD,
+          email:         user.email,
+          amount:        PRICE_USD,
           transactionId: paymentIntent.id,
-          biodataId: biodata?.biodataId || mongoId,
-          date: new Date().toISOString(),
+          biodataId:     biodata?.biodataId || mongoId,
+          date:          new Date().toISOString(),
         });
 
         await axiosSecure.post("/contact-requests", {
-          biodataId: biodata?.biodataId || mongoId,
+          biodataId:       biodata?.biodataId || mongoId,
           stripePaymentId: paymentIntent.id,
         });
 
@@ -108,12 +109,36 @@ const CheckoutForm = () => {
         }).then(() => navigate("/dashboard/contact-request"));
       } catch {
         setCardError(
-          "Payment received but failed to save. Please contact support with your transaction ID."
+          "Payment received but failed to save. Contact support with your transaction ID."
         );
       }
     }
 
     setProcessing(false);
+  };
+
+  const canPay = stripe && clientSecret && cardReady && !processing && !succeeded;
+
+  // Wrapper border driven purely by React state — no DOM manipulation
+  const wrapperStyle = {
+    padding:      "14px 16px",
+    background:   "#ffffff",
+    borderRadius: "8px",
+    minHeight:    "48px",
+    cursor:       "text",
+    transition:   "border 0.18s ease, box-shadow 0.18s ease",
+    // CRITICAL: no overflow property (stays at 'visible') — clipping breaks iframe input
+    // CRITICAL: no pointerEvents override — must stay at 'auto'
+    border: cardHasError
+      ? "1.5px solid #c0392b"
+      : cardFocused
+      ? "1.5px solid #d4833a"
+      : "1.5px solid rgba(196,168,128,0.4)",
+    boxShadow: cardHasError
+      ? "0 0 0 3px rgba(192,57,43,0.08)"
+      : cardFocused
+      ? "0 0 0 3px rgba(212,131,58,0.12)"
+      : "none",
   };
 
   return (
@@ -129,7 +154,7 @@ const CheckoutForm = () => {
           border-radius: 16px;
           box-shadow: 0 8px 48px rgba(180,140,80,0.1), 0 2px 8px rgba(0,0,0,0.04);
           position: relative;
-          /* CRITICAL: Do NOT add overflow:hidden — it clips the Stripe iframe */
+          /* NO overflow:hidden — clips Stripe iframe */
         }
 
         .ck-card::before {
@@ -163,16 +188,15 @@ const CheckoutForm = () => {
         }
 
         .ck-profile-left { display: flex; flex-direction: column; gap: 3px; }
-        .ck-profile-lbl { font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: #9a8270; }
+        .ck-profile-lbl  { font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: #9a8270; }
         .ck-profile-name { font-size: 0.92rem; font-weight: 500; color: #18100a; }
-        .ck-profile-id { font-size: 0.75rem; color: #c07030; font-weight: 500; }
+        .ck-profile-id   { font-size: 0.75rem; color: #c07030; font-weight: 500; }
 
         .ck-price {
           font-family: 'Cormorant Garamond', serif;
           font-size: 2rem; font-weight: 700; color: #18100a;
           line-height: 1; text-align: right; flex-shrink: 0;
         }
-
         .ck-price small {
           display: block; font-family: 'DM Sans', sans-serif;
           font-size: 0.7rem; font-weight: 400; color: #9a8270;
@@ -181,41 +205,12 @@ const CheckoutForm = () => {
 
         .ck-divider { height: 1px; background: rgba(196,168,128,0.2); margin: 1.5rem 2.2rem 0; }
 
-        .ck-form { padding: 1.5rem 2.2rem 2.2rem; }
+        .ck-body { padding: 1.5rem 2.2rem 2.2rem; }
 
         .ck-lbl {
           display: block; font-size: 0.68rem; font-weight: 500;
           letter-spacing: 0.14em; text-transform: uppercase;
           color: #7a6248; margin-bottom: 0.6rem;
-        }
-
-        /*
-         * THE FIX for non-interactive Stripe CardElement:
-         *
-         * Root cause: The previous version used onFocus/onBlur on the wrapper <div>.
-         * iframe focus events do NOT bubble to parent DOM elements in browsers.
-         * So the wrapper's onFocus/onBlur never fired, but more critically, adding
-         * class-based styles via querySelector from those handlers caused React
-         * to lose the element reference and sometimes prevented the iframe from
-         * receiving pointer events correctly.
-         *
-         * Fix: Use ONLY Stripe's own onFocus/onBlur callbacks on <CardElement>.
-         * These are reliable cross-browser events provided by the Stripe SDK.
-         * Visual state is stored in React state and applied via inline styles —
-         * no DOM manipulation, no class toggling, no ref needed.
-         *
-         * Also: the wrapper div must have no overflow property set at all
-         * (default is 'visible') and no pointer-events override.
-         */
-        .ck-stripe-host {
-          padding: 13px 16px;
-          background: #ffffff;
-          border-radius: 8px;
-          transition: border 0.2s ease, box-shadow 0.2s ease;
-          min-height: 48px;
-          /* overflow: default (visible) — never set to hidden */
-          /* pointer-events: default (auto) — never override */
-          cursor: text;
         }
 
         .ck-error {
@@ -225,7 +220,12 @@ const CheckoutForm = () => {
           display: flex; align-items: flex-start; gap: 8px; line-height: 1.5;
         }
 
-        .ck-submit {
+        .ck-not-ready {
+          margin-top: 0.5rem; font-size: 0.72rem;
+          color: #b8a080; text-align: center;
+        }
+
+        .ck-btn {
           width: 100%; margin-top: 1.4rem; padding: 14px;
           background: #18100a; color: #fffcf6; border: none;
           border-radius: 8px; font-family: 'DM Sans', sans-serif;
@@ -234,15 +234,16 @@ const CheckoutForm = () => {
           display: flex; align-items: center; justify-content: center; gap: 8px;
           transition: background 0.22s, transform 0.15s, box-shadow 0.22s;
         }
-
-        .ck-submit:hover:not(:disabled) {
+        .ck-btn:hover:not(:disabled) {
           background: #d4833a; transform: translateY(-1px);
           box-shadow: 0 6px 20px rgba(212,131,58,0.3);
         }
-
-        .ck-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-        .ck-submit.done { background: #2e6e30; }
-        .ck-submit.done:hover:not(:disabled) { background: #2e6e30; transform: none; box-shadow: none; }
+        .ck-btn:disabled {
+          opacity: 0.5; cursor: not-allowed;
+          transform: none !important; box-shadow: none !important;
+        }
+        .ck-btn.done { background: #2e6e30; }
+        .ck-btn.done:hover:not(:disabled) { background: #2e6e30; transform: none; box-shadow: none; }
 
         .ck-spin {
           width: 15px; height: 15px; flex-shrink: 0;
@@ -250,14 +251,12 @@ const CheckoutForm = () => {
           border-top-color: #fffcf6; border-radius: 50%;
           animation: ckspin 0.7s linear infinite;
         }
-
         @keyframes ckspin { to { transform: rotate(360deg); } }
 
         .ck-trust {
           display: flex; align-items: center; justify-content: center;
           gap: 1.4rem; flex-wrap: wrap; margin-top: 1.1rem;
         }
-
         .ck-trust-item {
           display: flex; align-items: center; gap: 5px;
           font-size: 0.7rem; color: #baa890;
@@ -270,11 +269,40 @@ const CheckoutForm = () => {
           border-radius: 8px; font-size: 0.75rem;
           color: #9a8270; line-height: 1.65;
         }
-
         .ck-hint strong { color: #3d2310; font-weight: 500; }
       `}</style>
 
-      <form className="ck-card ck" onSubmit={handleSubmit}>
+      {/*
+        ROOT IS A <div>, NOT A <form>.
+
+        Why this fixes the "cannot input card details" bug:
+        ─────────────────────────────────────────────────────
+        The Stripe CardElement renders inside a cross-origin <iframe>.
+        When that iframe is nested inside an HTML <form>, browsers attach
+        capture-phase event listeners to the form for keyboard/pointer events
+        (to handle implicit submit on Enter, autocomplete, etc.).
+
+        On some Chrome versions + OS combos, those capture listeners silently
+        suppress the first pointer-down event on cross-origin iframes, which
+        prevents the iframe from receiving focus. The user clicks the card
+        field, nothing happens, and the cursor never appears.
+
+        By using a <div> as root and calling handlePay() from the button's
+        onClick (type="button"), we eliminate ALL form-level event handling.
+        The Stripe iframe then receives every pointer and keyboard event
+        natively, as intended by Stripe's SDK.
+
+        Other rules that must be maintained:
+        • The wrapper <div> around <CardElement> must have NO overflow CSS
+          (leave at browser default 'visible'). overflow:hidden or 'clip'
+          breaks the iframe's focus/hit-testing on Chromium.
+        • Never set pointer-events on the wrapper div.
+        • Drive visual state (border, shadow) with React state + inline
+          styles ONLY — no querySelector, no classList from React handlers.
+        • Use ONLY Stripe's onFocus/onBlur on <CardElement>. Native DOM
+          focus events do NOT bubble from cross-origin iframes to parent.
+      */}
+      <div className="ck-card ck">
 
         <div className="ck-top">
           <p className="ck-eyebrow">Secure Payment</p>
@@ -282,6 +310,7 @@ const CheckoutForm = () => {
           <p className="ck-sub">One-time payment · No subscription</p>
         </div>
 
+        {/* Profile strip */}
         <div className="ck-profile">
           <div className="ck-profile-left">
             <span className="ck-profile-lbl">Unlocking contact info for</span>
@@ -297,44 +326,43 @@ const CheckoutForm = () => {
 
         <div className="ck-divider" />
 
-        <div className="ck-form">
+        <div className="ck-body">
           <label className="ck-lbl">Card Details</label>
 
-          {/* Wrapper: plain div, no overflow, no pointer-events, no onFocus/onBlur */}
-          <div
-            className="ck-stripe-host"
-            style={{
-              border: cardError
-                ? "1.5px solid #c0392b"
-                : cardFocused
-                ? "1.5px solid #d4833a"
-                : "1.5px solid rgba(196,168,128,0.4)",
-              boxShadow: cardError
-                ? "0 0 0 3px rgba(192,57,43,0.08)"
-                : cardFocused
-                ? "0 0 0 3px rgba(212,131,58,0.12)"
-                : "none",
-            }}
-          >
+          {/*
+            Wrapper div — strict rules:
+            ① NO overflow property (default 'visible')
+            ② NO pointer-events override (default 'auto')
+            ③ NO onFocus / onBlur / onClick on this div
+            ④ Visual state via inline styles from React state only
+          */}
+          <div style={wrapperStyle}>
             <CardElement
-              onReady={() => setCardReady(true)}
-              onFocus={() => setCardFocused(true)}   /* ✅ Stripe SDK event — reliable */
-              onBlur={() => setCardFocused(false)}   /* ✅ Stripe SDK event — reliable */
-              onChange={(e) => setCardError(e.error ? e.error.message : "")}
               options={{
                 hidePostalCode: true,
                 style: {
                   base: {
-                    fontSize: "15px",
-                    color: "#18100a",
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontWeight: "400",
+                    fontSize:      "15px",
+                    color:         "#18100a",
+                    fontFamily:    "'DM Sans', sans-serif",
+                    fontWeight:    "400",
                     letterSpacing: "0.02em",
+                    lineHeight:    "22px",
                     "::placeholder": { color: "#c8b49a" },
                     iconColor: "#c07030",
                   },
-                  invalid: { color: "#c0392b", iconColor: "#c0392b" },
+                  invalid: {
+                    color:     "#c0392b",
+                    iconColor: "#c0392b",
+                  },
                 },
+              }}
+              onReady={() => setCardReady(true)}
+              onFocus={() => { setCardFocused(true); }}
+              onBlur={()  => { setCardFocused(false); }}
+              onChange={(e) => {
+                setCardHasError(!!e.error);
+                setCardError(e.error ? e.error.message : "");
               }}
             />
           </div>
@@ -346,10 +374,16 @@ const CheckoutForm = () => {
             </div>
           )}
 
+          {!cardReady && !cardError && (
+            <p className="ck-not-ready">Loading secure card input…</p>
+          )}
+
+          {/* type="button" prevents any implicit form submission */}
           <button
-            type="submit"
-            className={`ck-submit${succeeded ? " done" : ""}`}
-            disabled={!stripe || !clientSecret || processing || succeeded || !cardReady}
+            type="button"
+            className={`ck-btn${succeeded ? " done" : ""}`}
+            onClick={handlePay}
+            disabled={!canPay}
           >
             {succeeded ? (
               <><FaCheckCircle size={14} /> Payment Complete</>
@@ -371,7 +405,7 @@ const CheckoutForm = () => {
             any future expiry (e.g. 12/34), any 3-digit CVC.
           </div>
         </div>
-      </form>
+      </div>
     </>
   );
 };

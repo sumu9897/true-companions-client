@@ -10,7 +10,7 @@ import { FaCloudUploadAlt, FaTimes, FaStar, FaCheck } from "react-icons/fa";
 
 const IMAGE_HOSTING_API = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMAGE_HOSTING_KEY}`;
 
-const DIVISIONS   = ["Dhaka","Chattagram","Rangpur","Barisal","Khulna","Mymensingh","Sylhet"];
+const DIVISIONS   = ["Dhaka","Chattagram","Rajshahi","Rangpur","Barisal","Khulna","Mymensingh","Sylhet"];
 const HEIGHTS     = ["4'6\"","4'8\"","4'10\"","5'0\"","5'1\"","5'2\"","5'3\"","5'4\"","5'5\"","5'6\"","5'7\"","5'8\"","5'9\"","5'10\"","5'11\"","6'0\"","6'1\"","6'2\""];
 const WEIGHTS     = ["40 kg","45 kg","50 kg","55 kg","60 kg","65 kg","70 kg","75 kg","80 kg","85 kg","90 kg"];
 const OCCUPATIONS = ["Student","Job","House wife","Business","Doctor","Engineer","Teacher","Other"];
