@@ -282,7 +282,7 @@ const Banner = () => {
             {[
               { num: "10K+", label: "Profiles" },
               { num: "3.2K+", label: "Marriages" },
-              { num: "7", label: "Divisions" },
+              { num: "8", label: "Divisions" },
             ].map(({ num, label }, i) => (
               <div key={label} style={{ display: "flex", alignItems: "center", gap: "2.5rem" }}>
                 {i > 0 && <div className="bn-stat-div" />}

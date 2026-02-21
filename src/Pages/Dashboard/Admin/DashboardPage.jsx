@@ -39,7 +39,7 @@ const DashboardPage = () => {
   const pieData = [
     { name: "Male", value: stats.maleCount || 0 },
     { name: "Female", value: stats.femaleCount || 0 },
-    { name: "Premium", value: stats.premiumCount || 0 },
+    // { name: "Premium", value: stats.premiumCount || 0 },
   ];
 
   return (

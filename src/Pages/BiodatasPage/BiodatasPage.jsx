@@ -11,7 +11,7 @@ import {
   FaSlidersH, FaTimes, FaChevronDown,
 } from "react-icons/fa";
 
-const DIVISIONS = ["Dhaka","Chattagram","Rangpur","Barisal","Khulna","Mymensingh","Sylhet"];
+const DIVISIONS = ["Dhaka","Chattagram","Rajshahi","Rangpur","Barisal","Khulna","Mymensingh","Sylhet"];
 const ITEMS_PER_PAGE = 20;
 
 const BiodatasPage = () => {
@@ -20,7 +20,7 @@ const BiodatasPage = () => {
   const navigate = useNavigate();
 
   const [ageMin, setAgeMin] = useState(18);
-  const [ageMax, setAgeMax] = useState(60);
+  const [ageMax, setAgeMax] = useState(65);
   const [biodataType, setBiodataType] = useState("");
   const [division, setDivision] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
