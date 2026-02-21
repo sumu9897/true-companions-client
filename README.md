@@ -14,8 +14,8 @@
 
 | Resource | URL |
 |---|---|
-| 🖥️ Live Site | [https://true-companions.web.app](https://true-companions.web.app) |
-| 🔧 Server API | [https://true-companions-server.vercel.app](https://bandhan-bd-server.vercel.app) |
+| 🖥️ Live Site | [https://bandhanbd.web.app](https://bandhanbd.web.app) |
+| 🔧 Server API | [https://bandhan-bd-server.vercel.app](https://bandhan-bd-server.vercel.app) |
 
 
 ---
@@ -189,6 +189,7 @@ VITE_FIREBASE_PROJECT_ID=your_project_id
 VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
+VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
 
 # Stripe (publishable key only — never the secret key)
 VITE_STRIPE_PUBLIC_KEY=pk_test_xxxxxxxxxxxx
