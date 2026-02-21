@@ -15,7 +15,7 @@
 | Resource | URL |
 |---|---|
 | 🖥️ Live Site | [https://true-companions.web.app](https://true-companions.web.app) |
-| 🔧 Server API | [https://true-companions-server.vercel.app](https://true-companions-server.vercel.app) |
+| 🔧 Server API | [https://true-companions-server.vercel.app](https://bandhan-bd-server.vercel.app) |
 
 
 ---
